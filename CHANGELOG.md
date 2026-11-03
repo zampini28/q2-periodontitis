@@ -10,6 +10,8 @@ All notable changes to `q2-periodontitis` are documented in this file.
 - Restore the canonical MIT license text; the previous file had a
   duplicated clause and GitHub detected it as "Other".
 - Run CI on every push and pull request, not only `main` and `master`.
+- Add separate pytest-cov coverage reporting for the plugin and the
+  validation analysis, with GitHub-native coverage badges.
 
 ## [Unreleased] — scientific revision
 

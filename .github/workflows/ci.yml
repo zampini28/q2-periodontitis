@@ -4,12 +4,16 @@ on:
   push:
   pull_request:
 
+permissions: {}
+
 env:
   QIIME2_RELEASE: "2024.10"
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     defaults:
       run:
         shell: bash -l {0}
@@ -40,9 +44,55 @@ jobs:
           qiime dev refresh-cache
           qiime periodontitis --help
 
-      - name: Run Pytest
+      - name: Run plugin tests with coverage
         run: |
-          pytest --verbose
+          pytest --verbose q2_periodontitis/tests \
+            --cov=q2_periodontitis \
+            --cov-config=pyproject.toml \
+            --cov-report=term-missing \
+            --cov-report=xml:coverage-plugin.xml \
+            --cov-report=html:htmlcov-plugin
+
+      - name: Run validation analysis tests with coverage
+        env:
+          COVERAGE_FILE: validation/.coverage
+        run: |
+          pytest --verbose validation/analysis/tests \
+            --cov=validation/analysis \
+            --cov-config=pyproject.toml \
+            --cov-report=term-missing \
+            --cov-report=xml:coverage-validation.xml \
+            --cov-report=html:htmlcov-validation
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            coverage-plugin.xml
+            coverage-validation.xml
+            htmlcov-plugin/
+            htmlcov-validation/
+          if-no-files-found: warn
+
+      - name: Upload plugin coverage data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-plugin-data
+          path: .coverage
+          include-hidden-files: true
+          if-no-files-found: warn
+
+      - name: Upload validation coverage data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-validation-data
+          path: validation/.coverage
+          include-hidden-files: true
+          if-no-files-found: warn
 
       - name: Check wheel contents
         run: |
@@ -53,3 +103,49 @@ jobs:
                    entry_points.txt; do
             grep -q "$f" wheel-contents.txt || { echo "missing $f"; exit 1; }
           done
+
+  coverage-badge:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Download plugin coverage data
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-plugin-data
+          path: .
+
+      - name: Publish plugin coverage
+        uses: py-cov-action/python-coverage-comment-action@e5fb2218463c3377f3504b0c5b5646ed53da7a2f  # v4.5
+        with:
+          GITHUB_TOKEN: ${{ github.token }}
+          COVERAGE_PATH: .
+          SUBPROJECT_ID: plugin
+          MINIMUM_GREEN: 90
+          MINIMUM_ORANGE: 70
+
+      - name: Download validation coverage data
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-validation-data
+          path: validation
+
+      - name: Move validation coverage data to repository root
+        run: cp validation/.coverage .coverage
+
+      - name: Publish validation coverage
+        uses: py-cov-action/python-coverage-comment-action@e5fb2218463c3377f3504b0c5b5646ed53da7a2f  # v4.5
+        with:
+          GITHUB_TOKEN: ${{ github.token }}
+          COVERAGE_PATH: .
+          SUBPROJECT_ID: validation
+          MINIMUM_GREEN: 90
+          MINIMUM_ORANGE: 70

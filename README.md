@@ -37,10 +37,14 @@ For development:
 ```bash
 git clone https://github.com/LaBiOmicS/q2-periodontitis.git
 cd q2-periodontitis
-conda env update -n q2-amplicon-2024.10 --file environment.yml   # adds pytest
+conda env update -n q2-amplicon-2024.10 --file environment.yml   # adds pytest and pytest-cov
 pip install -e .
-pytest
+pytest q2_periodontitis/tests --cov=q2_periodontitis --cov-report=term-missing
+pytest validation/analysis/tests --cov=validation/analysis --cov-report=term-missing
 ```
+
+CI reports plugin and validation coverage separately. Coverage badges are
+published to GitHub data branches after the first run on `main`.
 
 ## 2. Recommended input
 

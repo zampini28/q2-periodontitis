@@ -28,4 +28,5 @@ dependencies:
   - biom-format
   - jinja2
   - pytest
+  - pytest-cov
   - pip
