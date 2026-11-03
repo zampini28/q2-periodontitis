@@ -80,6 +80,10 @@ public clinical data (see `docs/VALIDATION.md`).
 - Empty feature-table support: `collapse_complexes` returns the documented
   mapping columns when there are no features, and the zero-feature and
   zero-sample cases are covered by tests.
+- Performance benchmark: runtime and peak RSS of `collapse_complexes` on
+  synthetic sparse tables, with `tables/performance.tsv`,
+  `performance_environment.json` and `fig5_performance`. The development
+  environment now includes matplotlib for the validation figures.
 - Citations: Chen et al. (2022), Chen et al. (2018).
 
 ## [Unreleased] — review corrections

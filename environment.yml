@@ -9,9 +9,9 @@
 #   conda activate q2-periodontitis
 #   pip install -e .
 #
-# This file lists the plugin's own requirements; every package below is
-# already part of the official amplicon distribution, so the update step
-# only verifies them (and adds the test/build tooling).
+# This file lists the plugin's requirements plus the test, coverage and
+# validation-figure tooling. The update step installs them on top of the
+# official amplicon distribution.
 name: q2-periodontitis
 channels:
   - https://packages.qiime2.org/qiime2/2024.10/amplicon/released/
@@ -27,6 +27,7 @@ dependencies:
   - scipy
   - biom-format
   - jinja2
+  - matplotlib
   - pytest
   - pytest-cov
   - pip

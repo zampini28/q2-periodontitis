@@ -220,6 +220,15 @@ if not rar.empty:
             "%d / %d" % (r.n_h, r.n_p), "%s (%s)" % (f(r.auc), f(r.sd, 3)),
             f(r.base)] for r in s.itertuples()])
 
+perf = read("performance.tsv")
+if not perf.empty:
+    h("Performance (synthetic tables)")
+    table(["Features", "Samples", "Nonzeros", "Runs", "Runtime (s)",
+           "Peak RSS (MB)"],
+          [[int(r.features), int(r.samples), int(r.nonzeros),
+            int(r.repeats), f(r.seconds, 3), f(r.peak_rss_mb, 1)]
+           for r in perf.itertuples()])
+
 with open(os.path.join(results, "REPORT.md"), "w") as fh:
     fh.write("\n".join(lines) + "\n")
 print("REPORT.md written")

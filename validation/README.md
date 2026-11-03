@@ -13,6 +13,7 @@ reported.
 - A QIIME 2 amplicon 2024.10 environment named `q2-amplicon-2024.10`
   (override with `Q2_ENV`).
 - `q2-periodontitis` installed in that environment.
+- matplotlib for the validation figures (installed by `environment.yml`).
 - Network access to ENA and SRA/BioSample.
 - About 60 GB of free disk for the raw reads, 4 cores and 15 GB of RAM.
 - About one day to process all 16 cohorts, plus the rarefaction robustness
@@ -50,6 +51,8 @@ the analyses it enters.
 - `analysis/run_analysis.py` runs the pre-specified Q1-Q6 analyses and
   writes `tables/`.
 - `analysis/robustness.py` runs the pseudocount and rarefaction analyses.
+- `analysis/performance.py` measures runtime and peak memory on synthetic
+  sparse tables.
 - `analysis/figures.py` writes `figures/`.
 - `analysis/report.py` writes `REPORT.md`.
 
@@ -59,8 +62,11 @@ files to the repository.
 
 The files currently in `results/` are the legacy single-cohort outputs
 described in [docs/VALIDATION.md](../docs/VALIDATION.md). The current
-pipeline writes `samples/`, `qc.tsv`, `tables/`, `figures/` and
-`REPORT.md` to the results directory passed to `analyse.sh`.
+pipeline writes `samples/`, `qc.tsv`, `tables/` (including
+`performance.tsv`), `performance_environment.json`, `figures/` and
+`REPORT.md` to the results directory passed to `analyse.sh`. The
+performance table is a synthetic engineering benchmark, not a biological
+result.
 
 ## Reproducibility
 

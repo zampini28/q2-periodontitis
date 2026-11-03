@@ -8,6 +8,7 @@ Writes PNG (300 dpi) and SVG to <results_dir>/figures/:
     fig2_roc        ROC curves per case-control cohort, SMDI and Red
     fig3_robustness classifier, pseudocount and rarefaction
     fig4_therapy    change of SMDI and Red after therapy
+    fig5_performance runtime and peak memory on synthetic tables
 """
 import os
 import sys
@@ -22,6 +23,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from common import (COMPARATOR, PRIMARY, PRIMARY_CLASSIFIER,  # noqa: E402
                     load_cohorts, load_samples, subject_case_control)
+from performance import plot_performance  # noqa: E402
 
 # Reference categorical palette (validated: scripts/validate_palette.js)
 COLOR = {"SMDI": "#2a78d6", "complex_Red": "#eb6834",
@@ -233,4 +235,9 @@ if not th.empty:
         ax.set_title(LABEL[m], fontsize=8, loc="left", color=INK)
     fig.tight_layout()
     save(fig, "fig4_therapy")
+
+# ------------------------------------------------------------ figure 5
+perf = read("performance.tsv")
+if not perf.empty:
+    plot_performance(perf, figdir)
 print("figures written to", figdir)

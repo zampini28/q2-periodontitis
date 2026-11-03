@@ -150,6 +150,32 @@ with 19 sites. The original study also described heterogeneous site-level
 responses. These data neither confirm nor rule out responsiveness to
 treatment. A larger longitudinal dataset is needed.
 
+## 3. Performance
+
+`validation/analysis/performance.py` measures `collapse-complexes` on
+synthetic sparse feature tables (5% density, fixed seed). Each
+configuration is run three times in an isolated process; the table reports
+the median runtime and the maximum peak RSS. Runtime is dominated by the
+number of features; the number of samples has little effect up to 500.
+
+| Features | Samples | Nonzeros | Runtime (s) | Peak RSS (MB) |
+|---|---|---|---|---|
+| 1,000 | 10 | 484 | 0.087 | 142.6 |
+| 1,000 | 500 | 24,450 | 0.092 | 145.3 |
+| 10,000 | 10 | 4,894 | 0.725 | 153.0 |
+| 10,000 | 500 | 243,891 | 0.729 | 158.1 |
+| 25,000 | 10 | 12,178 | 1.791 | 171.7 |
+| 25,000 | 500 | 609,640 | 1.774 | 186.4 |
+
+The full table is in
+[`validation/results/tables/performance.tsv`](../validation/results/tables/performance.tsv)
+and the figure is `fig5_performance`. The recorded run used Python 3.13.5,
+NumPy 2.5.4, pandas 3.1.0, SciPy 1.18.1, BIOM 2.1.18, 4 CPU cores and
+31 GB RAM; [`performance_environment.json`](../validation/results/performance_environment.json)
+records the environment. The supported QIIME 2 2024.10 environment uses
+Python 3.10, so rerun the benchmark there for the final paper numbers.
+These are synthetic engineering measurements, not biological results.
+
 ## Conclusions and limits
 
 * **The 49-species SMDI is the best-performing and best-supported index.**

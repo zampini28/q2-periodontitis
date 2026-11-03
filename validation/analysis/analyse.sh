@@ -11,5 +11,6 @@ run() { micromamba run -n "$ENV" python -I "$@"; }
 run "$HERE/collect.py" "$DATA" "$RESULTS"
 run "$HERE/run_analysis.py" "$RESULTS"
 run "$HERE/robustness.py" "$DATA" "$RESULTS"
+run "$HERE/performance.py" "$RESULTS"
 run "$HERE/figures.py" "$RESULTS"
 run "$HERE/report.py" "$RESULTS"
