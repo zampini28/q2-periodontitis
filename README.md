@@ -14,7 +14,7 @@
 * **PC2014_moderate**, the fraction of reads from the 17 taxa with moderate evidence of association with periodontitis (Pérez-Chaparro et al., 2014).
 * **quality-control measures**: sequencing depth, the fraction of reads assigned to a complex, and the fraction of reads named to species.
 
-The scientific basis, formulas and limits are in **[docs/THEORY.md](docs/THEORY.md)**. **[docs/VALIDATION.md](docs/VALIDATION.md)** documents how the indices behave on independent public clinical data. On 69 subjects, the 49-species SMDI separated periodontitis from health with AUC 0.90, and the published cut-off of 0.5 gave sensitivity 0.85 and specificity 0.90. See also [docs/TUTORIAL.md](docs/TUTORIAL.md), [docs/SPEC.md](docs/SPEC.md) and the [CHANGELOG](CHANGELOG.md).
+The scientific basis, formulas and limits are in **[docs/THEORY.md](docs/THEORY.md)**. **[docs/VALIDATION.md](docs/VALIDATION.md)** reports a case study on one independent public cohort (SRP075100). On its 69 subjects, the 49-species SMDI separated periodontitis from health with AUC 0.90, and the published cut-off of 0.5 gave sensitivity 0.85 and specificity 0.90. The pre-specified multi-cohort validation is described in **[docs/ANALYSIS_PLAN.md](docs/ANALYSIS_PLAN.md)**; its results are not yet reported. See also [docs/TUTORIAL.md](docs/TUTORIAL.md), [docs/SPEC.md](docs/SPEC.md) and the [CHANGELOG](CHANGELOG.md).
 
 > **Research use only.** The indices summarize microbial composition. They are not diagnostic tests and do not replace clinical periodontal examination.
 
@@ -45,7 +45,7 @@ pytest
 ## 2. Recommended input
 
 * A feature table of **raw counts** (do not rarefy or normalize).
-* A taxonomy classified to **species** against an **oral** reference, ideally eHOMD. [validation/run_pipeline.sh](validation/run_pipeline.sh) shows how to train a naive Bayes classifier on eHOMD for your amplicon region. With generic databases, fewer reads reach species level, and the complex profiles then cover a smaller part of the community. The `qc_*` columns show how much.
+* A taxonomy classified to **species** against an **oral** reference, ideally eHOMD. [validation/README.md](validation/README.md) documents the validation workflow, including how to train a naive Bayes classifier on eHOMD for your amplicon region. With generic databases, fewer reads reach species level, and the complex profiles then cover a smaller part of the community. The `qc_*` columns show how much.
 
 ## 3. Usage
 

@@ -1,14 +1,27 @@
 # Validation on public clinical data
 
-This page documents how the plugin's outputs behave on an independent
-clinical 16S dataset processed from raw reads. To reproduce it:
+This page reports a case study on one independent public cohort
+(SRP075100). The pre-specified multi-cohort validation is described in
+[ANALYSIS_PLAN.md](ANALYSIS_PLAN.md); its results are not reported here
+yet.
+
+To reprocess SRP075100 with the current pipeline:
 
 ```bash
-bash validation/run_pipeline.sh /path/to/workdir
+bash validation/run_cohort.sh SRP075100 /path/to/workdir
+bash validation/analysis/analyse.sh /path/to/workdir /path/to/results
 ```
 
-The per-subject values and the result tables are in
-[`validation/results/`](../validation/results/).
+The full multi-cohort workflow is
+`bash validation/run_all.sh /path/to/workdir`. See
+[validation/README.md](../validation/README.md) for requirements and
+outputs.
+
+The per-subject values and the result tables described on this page are
+the legacy single-cohort outputs in
+[`validation/results/`](../validation/results/). The current pipeline
+writes `samples/`, `qc.tsv`, `tables/`, `figures/` and `REPORT.md` to the
+results directory passed to `analyse.sh`.
 
 ## Dataset
 

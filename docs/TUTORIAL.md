@@ -1,8 +1,9 @@
 # Tutorial
 
 This tutorial runs `q2-periodontitis` on a subgingival 16S rRNA dataset in
-QIIME 2 (amplicon 2024.10). [validation/run_pipeline.sh](../validation/run_pipeline.sh)
-is a complete worked example on public data, from raw reads to results.
+QIIME 2 (amplicon 2024.10). [validation/README.md](../validation/README.md)
+documents the validation workflow, and [validation/run_all.sh](../validation/run_all.sh)
+runs it on public data from raw reads to results.
 
 ## 1. Inputs
 
@@ -124,8 +125,8 @@ qiime metadata tabulate --m-input-file deltas.qza --o-visualization deltas.qzv
 
 Negative deltas mean the index decreased (less dysbiotic). Test whether the
 median change differs from zero with a paired test, such as the Wilcoxon
-signed-rank test in `validation/evaluate.py`. Use one row per subject, or
-per site if sites are the unit you analyse.
+signed-rank test in `validation/analysis/run_analysis.py` (Q4). Use one
+row per subject, or per site if sites are the unit you analyse.
 
 ## 5. Reporting
 

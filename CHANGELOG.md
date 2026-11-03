@@ -2,6 +2,15 @@
 
 All notable changes to `q2-periodontitis` are documented in this file.
 
+## [Unreleased] — documentation and CI
+
+- Fix stale validation references and add `validation/README.md`.
+- Clarify that the reported 69-subject validation is the SRP075100 case
+  study, not the multi-cohort analysis.
+- Restore the canonical MIT license text; the previous file had a
+  duplicated clause and GitHub detected it as "Other".
+- Run CI on every push and pull request, not only `main` and `master`.
+
 ## [Unreleased] — scientific revision
 
 Every reported quantity is now either a published index or a documented
