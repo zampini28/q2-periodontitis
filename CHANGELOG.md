@@ -77,6 +77,9 @@ public clinical data (see `docs/VALIDATION.md`).
   Phylotypes are matched by HMT number.
 - `validation/`: a reproducible re-analysis of SRA SRP075100 (Chen et al.
   2018) with `docs/VALIDATION.md`.
+- Empty feature-table support: `collapse_complexes` returns the documented
+  mapping columns when there are no features, and the zero-feature and
+  zero-sample cases are covered by tests.
 - Citations: Chen et al. (2022), Chen et al. (2018).
 
 ## [Unreleased] — review corrections

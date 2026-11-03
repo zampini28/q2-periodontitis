@@ -584,7 +584,13 @@ def collapse_complexes(
     df_indices[QC_PREFIX + "species_fraction"] = np.where(
         empty, np.nan, species_fraction)
 
-    df_mapping = pd.DataFrame(feature_assignments).set_index("Feature ID")
+    mapping_columns = [
+        "Feature ID", "Taxonomy", "Genus", "Species",
+        "Complex", "Resolution", "PC2014", "Confidence"
+    ]
+    df_mapping = pd.DataFrame(
+        feature_assignments, columns=mapping_columns
+    ).set_index("Feature ID")
     return df_complexes, df_indices, df_mapping
 
 

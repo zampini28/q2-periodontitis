@@ -1,5 +1,6 @@
 import math
 import unittest
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -552,6 +553,61 @@ class TestCollapseComplexes(CollapseFixture):
         self.assertTrue(np.isnan(indices_df.loc["S4", "SMDI"]))
         np.testing.assert_allclose(
             complexes.view(pd.DataFrame).sum(axis=1).values, [1, 1, 1, 0])
+
+
+class TestCollapseEmpty(TestPluginBase):
+    package = "q2_periodontitis.tests"
+
+    INDEX_COLUMNS = [
+        "SMDI", "SMDI_simplified", "PC2014_moderate",
+        "qc_depth", "qc_assigned_fraction", "qc_species_fraction"
+    ]
+    MAPPING_COLUMNS = [
+        "Taxonomy", "Genus", "Species", "Complex", "Resolution",
+        "PC2014", "Confidence"
+    ]
+
+    def test_zero_features(self):
+        table = biom.Table(np.zeros((0, 2)), [], ["S1", "S2"])
+        taxonomy = pd.DataFrame(
+            {"Taxon": []},
+            index=pd.Index([], name="Feature ID"))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            complexes, indices, mapping = collapse_complexes(table, taxonomy)
+
+        self.assertEqual(list(complexes.index), ["S1", "S2"])
+        self.assertEqual(list(complexes.columns), COMPLEXES)
+        np.testing.assert_allclose(complexes.to_numpy(), 0.0)
+
+        self.assertEqual(list(indices.index), ["S1", "S2"])
+        self.assertEqual(list(indices.columns), self.INDEX_COLUMNS)
+        for column in ["SMDI", "SMDI_simplified", "PC2014_moderate",
+                       "qc_assigned_fraction", "qc_species_fraction"]:
+            self.assertTrue(indices[column].isna().all(), column)
+        self.assertTrue((indices["qc_depth"] == 0).all())
+
+        self.assertTrue(mapping.empty)
+        self.assertEqual(list(mapping.columns), self.MAPPING_COLUMNS)
+
+    def test_zero_samples(self):
+        taxa = {
+            "F0": "d__Bacteria; g__Porphyromonas; s__Porphyromonas_gingivalis",
+            "F1": "d__Bacteria; g__Fusobacterium; s__Fusobacterium_nucleatum",
+        }
+        table = biom.Table(np.zeros((2, 0)), list(taxa), [])
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            complexes, indices, mapping = collapse_complexes(
+                table, _taxonomy(taxa))
+
+        self.assertEqual(complexes.shape, (0, len(COMPLEXES)))
+        self.assertEqual(list(complexes.columns), COMPLEXES)
+        self.assertEqual(indices.shape[0], 0)
+        self.assertEqual(list(indices.columns), self.INDEX_COLUMNS)
+        self.assertEqual(list(mapping.index), ["F0", "F1"])
+        self.assertEqual(mapping.loc["F0", "Complex"], "Red")
+        self.assertEqual(mapping.loc["F1", "Complex"], "Orange")
 
 
 class TestClr(CollapseFixture):
