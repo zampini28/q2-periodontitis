@@ -84,6 +84,9 @@ public clinical data (see `docs/VALIDATION.md`).
   synthetic sparse tables, with `tables/performance.tsv`,
   `performance_environment.json` and `fig5_performance`. The development
   environment now includes matplotlib for the validation figures.
+- Simulated known-truth validation: 100 synthetic communities at three
+  sequencing depths, with clean and 20%-taxa-unassigned scenarios,
+  `tables/simulation.tsv` and `fig6_simulation`.
 - Citations: Chen et al. (2022), Chen et al. (2018).
 
 ## [Unreleased] — review corrections

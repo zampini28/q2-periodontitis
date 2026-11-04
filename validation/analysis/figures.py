@@ -9,6 +9,8 @@ Writes PNG (300 dpi) and SVG to <results_dir>/figures/:
     fig3_robustness classifier, pseudocount and rarefaction
     fig4_therapy    change of SMDI and Red after therapy
     fig5_performance runtime and peak memory on synthetic tables
+
+fig6_simulation is written by simulation.py.
 """
 import os
 import sys

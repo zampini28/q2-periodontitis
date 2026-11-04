@@ -53,6 +53,7 @@ the analyses it enters.
 - `analysis/robustness.py` runs the pseudocount and rarefaction analyses.
 - `analysis/performance.py` measures runtime and peak memory on synthetic
   sparse tables.
+- `analysis/simulation.py` runs the simulated known-truth validation.
 - `analysis/figures.py` writes `figures/`.
 - `analysis/report.py` writes `REPORT.md`.
 
@@ -63,14 +64,15 @@ files to the repository.
 The files currently in `results/` are the legacy single-cohort outputs
 described in [docs/VALIDATION.md](../docs/VALIDATION.md). The current
 pipeline writes `samples/`, `qc.tsv`, `tables/` (including
-`performance.tsv`), `performance_environment.json`, `figures/` and
-`REPORT.md` to the results directory passed to `analyse.sh`. The
-performance table is a synthetic engineering benchmark, not a biological
-result.
+`performance.tsv` and `simulation.tsv`), `performance_environment.json`,
+`figures/` and `REPORT.md` to the results directory passed to
+`analyse.sh`. The performance and simulation tables are synthetic
+engineering and validation results, not biological findings.
 
 ## Reproducibility
 
-- The random seed is fixed at `20261022` in `analysis/common.py`.
+- The random seed is fixed at `20261022` in `analysis/common.py`; the
+  simulation uses `20261104` in `analysis/simulation.py`.
 - Per-cohort software versions are written to
   `<cohort>/out/versions.txt` by `process_dataset.sh`.
 - `.qza` and `.qzv` artifacts are not tracked in git. Archive them with the
@@ -79,7 +81,9 @@ result.
 ## Current status
 
 The multi-cohort pipeline is implemented, but its full 16-cohort results
-are not committed. The validation reported in `docs/VALIDATION.md` is the
-SRP075100 case study. See [docs/VALIDATION.md](../docs/VALIDATION.md) and
+are not committed. `docs/VALIDATION.md` currently reports the SRP075100
+case study, the synthetic performance benchmark and the simulated
+known-truth validation; the full multi-cohort results are not yet
+reported. See [docs/VALIDATION.md](../docs/VALIDATION.md) and
 [docs/ANALYSIS_PLAN.md](../docs/ANALYSIS_PLAN.md) for the scientific scope
 and the planned analyses.

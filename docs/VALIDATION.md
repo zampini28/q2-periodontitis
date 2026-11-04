@@ -1,4 +1,4 @@
-# Validation on public clinical data
+# Validation on public clinical and simulated data
 
 This page reports a case study on one independent public cohort
 (SRP075100). The pre-specified multi-cohort validation is described in
@@ -175,6 +175,34 @@ NumPy 2.5.4, pandas 3.1.0, SciPy 1.18.1, BIOM 2.1.18, 4 CPU cores and
 records the environment. The supported QIIME 2 2024.10 environment uses
 Python 3.10, so rerun the benchmark there for the final paper numbers.
 These are synthetic engineering measurements, not biological results.
+
+## 4. Simulated communities
+
+`validation/analysis/simulation.py` generates 100 synthetic communities
+(50 health, 50 periodontitis) from 71 reference and SMDI taxa with known
+complex fractions and SMDI values (fixed seed 20261104). It compares the
+plugin output with the latent truth at 1,000, 5,000 and 20,000 reads. The
+stress scenario masks 20% of the assigned taxa (about 9% of reads) as
+unclassified.
+
+| Scenario | Depth | Unassigned reads | Complex MAE | SMDI MAE | SMDI Pearson | SMDI Spearman | Assignment accuracy |
+|---|---|---|---|---|---|---|---|
+| clean | 1k | 0 | 0.015 | 0.528 | 0.989 | 0.911 | 0.968 |
+| unassigned | 1k | 0.090 | 0.022 | 0.554 | 0.988 | 0.910 | 0.878 |
+| clean | 5k | 0 | 0.011 | 0.087 | 0.998 | 0.977 | 0.968 |
+| unassigned | 5k | 0.090 | 0.020 | 0.494 | 0.998 | 0.975 | 0.878 |
+| clean | 20k | 0 | 0.010 | 0.025 | 1.000 | 0.995 | 0.968 |
+| unassigned | 20k | 0.090 | 0.019 | 0.514 | 1.000 | 0.990 | 0.878 |
+
+With correct taxonomy, complex fractions and SMDI are recovered almost
+exactly. At 1k reads, the SMDI MAE rises to about 0.5 and the Spearman
+correlation falls to 0.91 because many species are absent and enter the
+CLR at the pseudocount. Masking 20% of assigned taxa leaves SMDI Pearson
+correlation near 1.0, but raises its MAE to about 0.5 and lowers
+assignment accuracy to about 0.88. This is a
+software and assignment test, not a biological validation; the figure is
+`fig6_simulation` and the table is
+[`validation/results/tables/simulation.tsv`](../validation/results/tables/simulation.tsv).
 
 ## Conclusions and limits
 
