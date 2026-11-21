@@ -2,6 +2,22 @@
 
 All notable changes to `q2-periodontitis` are documented in this file.
 
+## [Unreleased] — reproducibility
+
+- Add `validation/reproduce.sh`: one command from a fresh clone installs
+  micromamba, the QIIME 2 2024.10 and R microbiome 1.6.0 environments,
+  runs the tests and the full validation.
+- Add an SMDI cross-check of the plugin against R microbiome 1.6.0
+  (`validation/analysis/smdi_microbiome.R`, `rcheck.py`) on simulated,
+  synthetic and cohort tables, and a plugin-vs-R runtime and memory
+  benchmark (`r_crosscheck.tsv`, `r_benchmark.tsv`, `fig7_r_benchmark`).
+- Document the cross-check in `docs/THEORY.md` and `docs/VALIDATION.md`
+  (section 5), and the disk, environment and cluster requirements in
+  `validation/README.md`.
+- Factor `feature_units` out of `aggregate_counts` (no change in output).
+- Skip, with a warning, a therapy follow-up whose time label is missing
+  from a cohort's metadata instead of stopping the whole analysis.
+
 ## [Unreleased] — documentation and CI
 
 - Fix stale validation references and add `validation/README.md`.

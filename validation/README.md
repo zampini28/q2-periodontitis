@@ -13,15 +13,44 @@ reported.
 - A QIIME 2 amplicon 2024.10 environment named `q2-amplicon-2024.10`
   (override with `Q2_ENV`).
 - `q2-periodontitis` installed in that environment.
+- An R environment with microbiome 1.6.0 named `r-microbiome-1.6.0`
+  (override with `R_ENV`), from `r-microbiome-1.6.0.yml`.
 - matplotlib for the validation figures (installed by `environment.yml`).
 - Network access to ENA and SRA/BioSample.
-- About 60 GB of free disk for the raw reads, 4 cores and 15 GB of RAM.
+- About 60 GB of free disk for the raw reads plus about 12 GB for the
+  environments, 4 cores and 15 GB of RAM.
 - About one day to process all 16 cohorts, plus the rarefaction robustness
   runs.
 
 ## Quick start
 
-Run the full pre-specified analysis for every cohort in `cohorts.tsv`:
+From a fresh clone on a Linux machine (only `curl` and `bzip2` needed),
+one command installs micromamba, the QIIME 2 environment and the R
+microbiome 1.6.0 environment, runs the tests, processes every cohort and
+writes all results (multi-cohort validation, robustness, simulation,
+performance, R cross-check and plugin-vs-R benchmark), figures and
+`results/REPORT.md`:
+
+```bash
+git clone https://github.com/LaBiOmicS/q2-periodontitis.git
+cd q2-periodontitis
+tmux new -s validation 'bash validation/reproduce.sh ~/q2-validation-data 2>&1 | tee ~/reproduce.log'
+```
+
+It can be re-run after an interruption; finished steps are skipped.
+
+The environments and package cache take about 12 GB in
+`MAMBA_ROOT_PREFIX` (default `~/micromamba`); set it, and the data
+directory, to a larger disk if home is small, for example
+`MAMBA_ROOT_PREFIX=/data/micromamba bash validation/reproduce.sh /data/q2`.
+The tests, including the R cross-check, run before any download and stop
+the command if they fail. On a shared cluster, submit the command as a
+batch job rather than running it for a day on a login node; downloads from
+conda-forge, bioconda, ENA and SRA must be reachable (set `https_proxy`
+if needed).
+
+If the environment is already installed, run the full pre-specified
+analysis for every cohort in `cohorts.tsv`:
 
 ```bash
 bash validation/run_all.sh /path/to/workdir
@@ -54,6 +83,11 @@ the analyses it enters.
 - `analysis/performance.py` measures runtime and peak memory on synthetic
   sparse tables.
 - `analysis/simulation.py` runs the simulated known-truth validation.
+- `analysis/rcheck.py` cross-checks the SMDI of the plugin against
+  `analysis/smdi_microbiome.R` (R microbiome 1.6.0, the implementation used
+  to define the index) on the simulated, synthetic and cohort tables, and
+  benchmarks the two implementations (`r_crosscheck.tsv`,
+  `r_benchmark.tsv`, `fig7_r_benchmark`).
 - `analysis/figures.py` writes `figures/`.
 - `analysis/report.py` writes `REPORT.md`.
 

@@ -382,6 +382,20 @@ def aggregate_counts(table, taxonomy, synonyms, level, exclude=None):
     low-confidence ones), are kept as their own units, keyed by their full
     taxonomy string, so that the total of every sample is unchanged.
     """
+    units = feature_units(table, taxonomy, synonyms, level, exclude)
+    codes, uniques = pd.factorize(pd.Series(units))
+    indicator = sparse.csr_matrix(
+        (np.ones(len(codes)), (codes, np.arange(len(codes)))),
+        shape=(len(uniques), len(codes)))
+    summed = indicator @ table.matrix_data  # taxa x samples, still sparse
+    return pd.DataFrame(summed.toarray().T,
+                        index=list(table.ids(axis="sample")),
+                        columns=list(uniques))
+
+
+def feature_units(table, taxonomy, synonyms, level, exclude=None):
+    """The unit (taxon key) that aggregate_counts sums each feature into,
+    in the order of the table's features."""
     exclude = exclude or set()
     taxa = _taxon_series(taxonomy)
     feature_ids = list(table.ids(axis="observation"))
@@ -398,14 +412,7 @@ def aggregate_counts(table, taxonomy, synonyms, level, exclude=None):
                          else name.lower())
         else:
             units.append("unresolved: %s" % tax_str)
-    codes, uniques = pd.factorize(pd.Series(units))
-    indicator = sparse.csr_matrix(
-        (np.ones(len(codes)), (codes, np.arange(len(codes)))),
-        shape=(len(uniques), len(codes)))
-    summed = indicator @ table.matrix_data  # taxa x samples, still sparse
-    return pd.DataFrame(summed.toarray().T,
-                        index=list(table.ids(axis="sample")),
-                        columns=list(uniques))
+    return units
 
 
 def clr_microbiome(counts, pseudocount=None):

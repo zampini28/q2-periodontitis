@@ -1,0 +1,11 @@
+# R environment for the SMDI cross-check and benchmark (analysis/rcheck.py):
+# microbiome 1.6.0, the version used by Chen, Marsh & Al-Hebshi (2022).
+#
+#   micromamba create -n r-microbiome-1.6.0 -f validation/r-microbiome-1.6.0.yml
+name: r-microbiome-1.6.0
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base=3.6
+  - bioconductor-microbiome=1.6.0

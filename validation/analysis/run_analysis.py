@@ -200,6 +200,9 @@ def paired_units(df, follow, arm=None):
     d = df.assign(unit=unit)
     keys = ["unit"] + ([arm] if arm else [])
     per = d.groupby(keys + ["time"])[MEASURES].mean()
+    times = per.index.get_level_values("time")
+    if "baseline" not in times or follow not in times:
+        return None
     b = per.xs("baseline", level="time")
     f = per.xs(follow, level="time")
     both = b.join(f, lsuffix="_b", rsuffix="_f", how="inner")
@@ -217,6 +220,10 @@ for c in cohorts[cohorts["therapy_followups"] != ""].itertuples():
             df = df[df["status"] == "periodontitis"]
         for follow in c.therapy_followups.split(","):
             both = paired_units(df, follow, arm)
+            if both is None:
+                print("WARNING: %s %s: no baseline or %r samples; follow-up "
+                      "skipped" % (c.cohort, clf, follow), file=sys.stderr)
+                continue
             strata = ([("all", both)] if arm is None
                       else list(both.groupby(arm)))
             for stratum, g in strata:

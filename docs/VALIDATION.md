@@ -13,7 +13,9 @@ bash validation/analysis/analyse.sh /path/to/workdir /path/to/results
 ```
 
 The full multi-cohort workflow is
-`bash validation/run_all.sh /path/to/workdir`. See
+`bash validation/run_all.sh /path/to/workdir`; from a fresh clone,
+`bash validation/reproduce.sh` also installs the environments and runs the
+tests first. See
 [validation/README.md](../validation/README.md) for requirements and
 outputs.
 
@@ -203,6 +205,21 @@ assignment accuracy to about 0.88. This is a
 software and assignment test, not a biological validation; the figure is
 `fig6_simulation` and the table is
 [`validation/results/tables/simulation.tsv`](../validation/results/tables/simulation.tsv).
+
+## 5. Cross-check and benchmark against R microbiome 1.6.0
+
+`validation/analysis/rcheck.py` computes the SMDI and SMDI_simplified with
+`validation/analysis/smdi_microbiome.R`, which calls
+`microbiome::transform(x, "clr")` of microbiome 1.6.0 (R 3.6, from
+`validation/r-microbiome-1.6.0.yml`), and compares it with the plugin on
+the simulated tables, synthetic sparse tables and every processed cohort.
+A table passes when every sample differs by less than 1e-9 and empty
+samples are missing in both. In a development run on the simulated and
+synthetic tables, the largest difference was 1.3e-15. The same script
+benchmarks runtime and peak memory of both implementations on the
+synthetic tables of section 3. The full results (`r_crosscheck.tsv`,
+`r_benchmark.tsv`, `fig7_r_benchmark`, `r_environment.json`) are written by
+the multi-cohort run and are not reported here yet.
 
 ## Conclusions and limits
 

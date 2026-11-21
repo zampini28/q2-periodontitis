@@ -229,6 +229,29 @@ if not perf.empty:
             int(r.repeats), f(r.seconds, 3), f(r.peak_rss_mb, 1)]
            for r in perf.itertuples()])
 
+rc = read("r_crosscheck.tsv")
+if not rc.empty:
+    h("SMDI cross-check against R microbiome 1.6.0")
+    lines.extend(["Plugin vs `microbiome::transform(x, \"clr\")` on the same "
+                  "counts and taxon grouping; a table passes if every "
+                  "sample differs by less than 1e-9 and undefined values "
+                  "match.", ""])
+    table(["Table", "Classifier", "Index", "Features", "Samples",
+           "Max |difference|", "NaN mismatches", "Pass"],
+          [[r["source"], r["classifier"] if isinstance(r["classifier"], str)
+            else "", r["index"], int(r["features"]), int(r["samples"]),
+            "%.1e" % r["max_abs_diff"], int(r["nan_mismatch"]),
+            "yes" if r["pass"] else "**no**"] for _, r in rc.iterrows()])
+
+rb = read("r_benchmark.tsv")
+if not rb.empty:
+    h("Benchmark: 49-species SMDI, plugin vs R microbiome 1.6.0")
+    table(["Implementation", "Features", "Samples", "Runs", "Runtime (s)",
+           "Peak RSS (MB)"],
+          [[r.implementation, int(r.features), int(r.samples),
+            int(r.repeats), f(r.seconds, 3), f(r.peak_rss_mb, 1)]
+           for r in rb.itertuples()])
+
 with open(os.path.join(results, "REPORT.md"), "w") as fh:
     fh.write("\n".join(lines) + "\n")
 print("REPORT.md written")
