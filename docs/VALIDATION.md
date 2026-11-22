@@ -128,7 +128,8 @@ cohorts:
 | **SMDI > 0.5 (best in test)** | **0.87 (0.79–0.93)** | **0.81 (0.69–0.89)** |
 | SMDI_simplified > 0 | 0.75 (0.57–0.88) | 0.82 (0.70–0.90) |
 
-Cohorts differed (I² = 24–63% for sensitivity, 46–60% for specificity):
+Cohorts differed (SMDI cut-offs: I² = 24–63% for sensitivity, 46–60% for
+specificity; SMDI_simplified: 86% and 61%):
 at 0.5, sensitivity ranged from 0.78 (PRJNA1470369) to 1.00
 (PRJNA726254) and specificity from 0.60 (PRJNA773202) to 0.90
 (SRP075100).
@@ -181,7 +182,7 @@ subjects, there was no correlation with any site-level measure.
   V1–V3 values were 0.41 higher (p = 2 × 10⁻¹⁰). In SRP009299, V1–V2 and V4
   gave AUC 0.93 and 0.89 (ρ = 0.90).
 * **Pseudocount.** Fixed pseudocounts of 10⁻⁶ to 10⁻⁴ left the median
-  cohort AUC at 0.93 and the ranking nearly unchanged (ρ ≥ 0.99), but
+  cohort AUC at 0.93 and the ranking nearly unchanged (ρ ≥ 0.98), but
   shifted the median SMDI by up to 1.1.
 * **Rarefaction.** Rarefying to 1,000, 5,000 or 10,000 reads (10 draws)
   changed the cohort AUC by less than 0.06 on average, except where few
