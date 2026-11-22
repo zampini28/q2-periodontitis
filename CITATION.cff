@@ -15,7 +15,7 @@ authors:
     orcid: "https://orcid.org/0000-0002-4705-8352"
     affiliation: "Universidade de Mogi das Cruzes, Mogi das Cruzes, São Paulo, Brazil"
 title: "q2-periodontitis: QIIME 2 Plugin for Subgingival Biofilm Ecological Characterization, Socransky Complexes Collapse, and Dysbiosis Indices"
-version: 2026.1.0
+version: 2026.2.0
 date-released: 2026-08-31
 url: "https://github.com/LaBiOmicS/q2-periodontitis"
 keywords:
