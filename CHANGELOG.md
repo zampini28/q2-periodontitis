@@ -15,7 +15,7 @@ All notable changes to `q2-periodontitis` are documented in this file.
   (section 5), and the disk, environment and cluster requirements in
   `validation/README.md`.
 - Report the multi-cohort validation of 16 cohorts in `docs/VALIDATION.md`
-  (pooled SMDI AUC 0.90 in seven independent cohorts), with a Deviations
+  (pooled SMDI AUC 0.94 in six independent cohorts), with a Deviations
   section, and commit its results and provenance in `validation/results/`.
 - Fix the peak memory of the plugin-vs-R benchmark: each process now reports
   its own peak RSS (VmHWM). `ru_maxrss` from `os.wait4` included the
@@ -32,6 +32,11 @@ All notable changes to `q2-periodontitis` are documented in this file.
   dated search files next to it, including the amplicon run summary now
   committed as `amplicon_runs_2026-10-22.tsv`, and reproduces
   `screening_2026-10-22.tsv` exactly.
+- PRJNA1294584 has no health group: its controls all have gingivitis
+  (Sawangpanyangkura et al. 2026). They are now labelled gingivitis and the
+  cohort enters only the stage correlation; the pooled SMDI AUC is 0.94
+  (0.91–0.98) in six cohorts instead of 0.90 (0.81–1.00) in seven. Recorded
+  as a deviation in `docs/VALIDATION.md`.
 
 ## [Unreleased] — documentation and CI
 

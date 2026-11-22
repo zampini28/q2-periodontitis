@@ -3,7 +3,7 @@ SRP075100	SRP075100	yes	primary	yes	after-therapy			no	V4	Illumina MiSeq	?	Chen 
 PRJNA863881	PRJNA863881	yes	primary	yes				yes	V3-V4	Illumina MiSeq	Spain	Health, gingivitis, stage I-IV, with subject-level clinical measures
 PRJEB83770	PRJEB83770	yes	primary	yes				no	V3-V4	Illumina MiSeq	France	PERIDYSSEQ: health, gingivitis, periodontitis
 PRJNA1470369	PRJNA1470369	yes	primary	yes				stage	V3-V4	Illumina NovaSeq	China	Health vs stage I-IV periodontitis
-PRJNA1294584	PRJNA1294584	yes	primary	yes				stage	V3-V4	Illumina NovaSeq	Thailand	Control vs stage 2-4 periodontitis
+PRJNA1294584	PRJNA1294584	yes	no	no				stage	V3-V4	Illumina NovaSeq	Thailand	Gingivitis vs stage II-IV periodontitis; no health group
 PRJNA773202	PRJNA773202	yes	primary	yes				no	V3-V4	Illumina MiSeq	Spain/Portugal	Systemically healthy subjects with or without periodontitis
 PRJNA773195	PRJNA773195	yes	region-only	yes				no	V1-V3	Illumina MiSeq	Spain/Portugal	Same samples as PRJNA773202, V1-V3
 PRJNA726254	PRJNA726254	yes	primary	yes	after-therapy			no	V4	Illumina MiSeq	USA	Health vs chronic periodontitis; same subjects after non-surgical therapy

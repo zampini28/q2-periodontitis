@@ -36,6 +36,9 @@ D = {
                      "health vs stage I-IV periodontitis in BioSample "
                      "host_disease"),
     "PRJNA1294584": (INC, "control vs stage 2-4 in BioSample title"),
+    # The "controls" were later found to all have gingivitis (no health
+    # group); the cohort only enters the stage correlation. See the
+    # Deviations section of docs/VALIDATION.md.
     "PRJEB83770": (INC,
                    "healthy / gingivitis / periodontitis in BioSample "
                    "attributes"),

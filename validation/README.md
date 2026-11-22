@@ -119,4 +119,6 @@ The full run of all 16 cohorts finished on 21 November 2026 (12 hours on a
 [docs/VALIDATION.md](../docs/VALIDATION.md), including the deviations from
 [docs/ANALYSIS_PLAN.md](../docs/ANALYSIS_PLAN.md). The R cross-check and
 benchmark were rerun on the same day after a fix to the memory
-measurement.
+measurement. On 22 November the analysis steps (`collect.py` to
+`report.py`, except the R cross-check, performance and simulation) were
+rerun after PRJNA1294584's controls were relabelled as gingivitis.

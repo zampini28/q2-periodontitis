@@ -308,16 +308,18 @@ def elderly_nspt():
 
 def thai_stages():
     """PRJNA1294584: BioSample title control / Stage2 / Stage3 / Stage4,
-    one sample per subject (host_subject_id)."""
+    one sample per subject (host_subject_id). The controls all have
+    gingivitis (Sawangpanyangkura et al. 2026, J Clin Periodontol
+    53:1332): there is no health group."""
     a = attributes()
     label = a["title"] if "title" in a else runs["sample_title"]
     stage = label.str.extract(r"Stage(\d)")[0]
     out = pd.DataFrame({"run": a["run"], "subject": a["host subject id"],
                         "group_label": label})
-    out["status"] = ["health" if str(x).lower() == "control"
+    out["status"] = ["gingivitis" if str(x).lower() == "control"
                      else "periodontitis" for x in label]
-    out["stage"] = [0 if s == "health" else int(st) if isinstance(st, str)
-                    else None for s, st in zip(out["status"], stage)]
+    out["stage"] = [int(st) if isinstance(st, str) else None
+                    for st in stage]
     out["sample-id"] = out["subject"]
     return manifest(out, paired=True), out
 
