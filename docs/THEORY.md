@@ -92,7 +92,7 @@ $$\mathrm{SMDI} = \overline{\mathrm{clr}}(\text{dysbiotic taxa}) - \overline{\ma
 The plugin reproduces the published computation, which used the R package
 *microbiome* 1.6.0, `transform(x, "clr")`. The source of that version was
 inspected, and `validation/analysis/rcheck.py` checks the plugin against
-microbiome 1.6.0 itself (see [VALIDATION.md](VALIDATION.md), section 5):
+microbiome 1.6.0 itself (see [VALIDATION.md](VALIDATION.md#cross-check-against-r-microbiome-160)):
 
 1. Counts are aggregated to the signature's taxonomic level (species or
    genus). Features without a name at that level keep their reads as

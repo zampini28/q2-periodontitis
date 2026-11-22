@@ -16,7 +16,9 @@ Benchmark: on the synthetic tables of performance.py, the 49-species SMDI
 computed by the plugin (compute_smdi, including taxonomy parsing) and by
 smdi_microbiome.R (taxon grouping given). Each run is a separate process;
 runtime is measured inside the process from loaded tables to index, and peak
-RSS is that of the whole process (os.wait4).
+RSS is that of the whole process, read by the process itself from VmHWM in
+/proc/self/status (Linux). os.wait4 is not used for memory: its ru_maxrss
+includes the parent's memory that the child carried until exec.
 
 Writes:
 
@@ -94,25 +96,44 @@ def run_r(rscript, table, taxonomy, index, synonyms):
     with tempfile.TemporaryDirectory() as workdir:
         inputs = write_inputs(table, taxonomy, index, synonyms, workdir)
         out = os.path.join(workdir, "smdi.tsv")
-        stdout, peak = run_child([rscript, R_SCRIPT] + inputs + [out])
+        seconds, peak = timing(
+            run_child([rscript, R_SCRIPT] + inputs + [out]))
         smdi = pd.read_csv(out, sep="\t", index_col=0)["SMDI"]
     smdi.index = smdi.index.astype(str)
-    return smdi, float(stdout.strip().splitlines()[-1]), peak
+    return smdi, seconds, peak
+
+
+def timing(stdout):
+    """Seconds and peak RSS (MB) from a child's last line '<s>\\t<MB>'."""
+    seconds, peak = stdout.strip().splitlines()[-1].split("\t")
+    return float(seconds), float(peak)
+
+
+def own_peak_mb():
+    """Peak RSS of this process since exec (VmHWM), in MB."""
+    with open("/proc/self/status") as fh:
+        for line in fh:
+            if line.startswith("VmHWM:"):
+                return int(line.split()[1]) / 1024
+    raise RuntimeError("VmHWM not found in /proc/self/status")
 
 
 def run_child(command):
-    """Runs a command; returns its stdout and peak RSS (MB)."""
-    # Files, not pipes: a full pipe would block the child before wait4
+    """Runs a command and returns its stdout."""
+    # The QIIME 2 environment sets R_LIBS_USER to its own R 4.3 library,
+    # which would make the R 3.6 of microbiome 1.6.0 load the wrong packages
+    env = {k: v for k, v in os.environ.items()
+           if not k.startswith("R_") and k != "RSTUDIO_WHICH_R"}
+    # Output goes to files, so a large output can never block the child
     with tempfile.TemporaryFile("w+") as out, \
             tempfile.TemporaryFile("w+") as err:
-        proc = subprocess.Popen(command, stdout=out, stderr=err, text=True)
-        _, status, usage = os.wait4(proc.pid, 0)
-        proc.returncode = os.waitstatus_to_exitcode(status)
+        proc = subprocess.run(command, stdout=out, stderr=err, text=True,
+                              env=env)
         if proc.returncode:
             err.seek(0)
             raise RuntimeError("%s failed:\n%s" % (command[0], err.read()))
         out.seek(0)
-        return out.read(), usage.ru_maxrss / 1024
+        return out.read()
 
 
 def compare(plugin, r):
@@ -190,7 +211,7 @@ def crosscheck(rscript, data_dir, quick):
 
 
 def plugin_seconds(features, samples):
-    """Child-process mode: times compute_smdi on one synthetic table."""
+    """Child-process mode: seconds of compute_smdi on one synthetic table."""
     table, taxonomy = performance.make_table(features, samples)
     synonyms = load_synonyms()
     signature = load_signature(SMDI_SPECIES)
@@ -213,12 +234,11 @@ def benchmark(rscript, quick):
                   % (n_features, n_samples), flush=True)
             table, taxonomy = performance.make_table(n_features, n_samples)
             for _ in range(repeats):
-                stdout, peak = run_child([
+                seconds, peak = timing(run_child([
                     sys.executable, "-I", os.path.abspath(__file__),
-                    "--plugin-seconds", str(n_features), str(n_samples)])
+                    "--plugin-seconds", str(n_features), str(n_samples)]))
                 rows.append(("q2-periodontitis", n_features, n_samples,
-                             table.matrix_data.nnz,
-                             float(stdout.strip().splitlines()[-1]), peak))
+                             table.matrix_data.nnz, seconds, peak))
                 _, seconds, peak = run_r(rscript, table, taxonomy, "SMDI",
                                          synonyms)
                 rows.append(("R microbiome 1.6.0", n_features, n_samples,
@@ -273,7 +293,8 @@ def plot_benchmark(bench, figdir):
 
 def main():
     if len(sys.argv) == 4 and sys.argv[1] == "--plugin-seconds":
-        print(plugin_seconds(int(sys.argv[2]), int(sys.argv[3])))
+        seconds = plugin_seconds(int(sys.argv[2]), int(sys.argv[3]))
+        print("%.6f\t%.3f" % (seconds, own_peak_mb()))
         return
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("data_dir", help="processed cohorts ('' for none)")
@@ -286,7 +307,7 @@ def main():
 
     tables = os.path.join(args.results, "tables")
     os.makedirs(tables, exist_ok=True)
-    stdout, _ = run_child([args.rscript, R_SCRIPT, "--versions"])
+    stdout = run_child([args.rscript, R_SCRIPT, "--versions"])
     with open(os.path.join(args.results, "r_environment.json"), "w") as fh:
         fh.write(stdout)
 

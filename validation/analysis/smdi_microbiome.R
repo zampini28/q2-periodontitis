@@ -14,8 +14,8 @@
 # as zero rows, microbiome::transform(x, "clr") is applied to the phyloseq
 # object, and SMDI = mean CLR of the dysbiotic units - mean CLR of the
 # normobiotic units (NA for an empty sample). Writes one row per sample; the
-# last line of stdout is the time in seconds from the loaded tables to the
-# index.
+# last line of stdout is "<seconds>\t<peak MB>": the time from the loaded
+# tables to the index, and the peak RSS of this process (VmHWM, Linux).
 suppressMessages({library(microbiome); library(phyloseq)})
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) == 1 && args[1] == "--versions") {
@@ -55,4 +55,7 @@ seconds <- system.time({
 
 write.table(data.frame(sample = names(smdi), SMDI = sprintf("%.17g", smdi)),
             args[4], sep = "\t", quote = FALSE, row.names = FALSE)
-cat(sprintf("%.6f\n", seconds))
+status <- readLines("/proc/self/status")
+peak_kb <- as.numeric(sub("^VmHWM:\\s*([0-9]+) kB$", "\\1",
+                          grep("^VmHWM:", status, value = TRUE)))
+cat(sprintf("%.6f\t%.3f\n", seconds, peak_kb / 1024))

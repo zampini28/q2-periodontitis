@@ -1,0 +1,96 @@
+== PRJEB106816
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0
+== PRJEB83770
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0
+== PRJNA1294584
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0
+== PRJNA1470369
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0
+== PRJNA726254
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0
+== PRJNA736618
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0
+== PRJNA773195
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0
+== PRJNA773202
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0
+== PRJNA786436
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0
+== PRJNA863881
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0
+== SRP009299_V12
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0
+== SRP009299_V4
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0
+== SRP051201
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0
+== SRP062274
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0
+== SRP075100
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0
+== SRP226726
+q2cli version 2024.10.1
+dada2: 2024.10.0
+deblur: 2024.10.0
+feature-classifier: 2024.10.0
+periodontitis: 2026.1.0

@@ -14,6 +14,12 @@ All notable changes to `q2-periodontitis` are documented in this file.
 - Document the cross-check in `docs/THEORY.md` and `docs/VALIDATION.md`
   (section 5), and the disk, environment and cluster requirements in
   `validation/README.md`.
+- Report the multi-cohort validation of 16 cohorts in `docs/VALIDATION.md`
+  (pooled SMDI AUC 0.90 in seven independent cohorts), with a Deviations
+  section, and commit its results and provenance in `validation/results/`.
+- Fix the peak memory of the plugin-vs-R benchmark: each process now reports
+  its own peak RSS (VmHWM). `ru_maxrss` from `os.wait4` included the
+  parent's memory, so both implementations showed the same value.
 - Factor `feature_units` out of `aggregate_counts` (no change in output).
 - Skip, with a warning, a therapy follow-up whose time label is missing
   from a cohort's metadata instead of stopping the whole analysis.

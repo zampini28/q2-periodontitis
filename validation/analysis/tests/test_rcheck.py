@@ -32,6 +32,16 @@ def test_signature_units_are_feature_unit_keys():
         sig["unit"].str.lower())
 
 
+def test_child_peak_excludes_parent_memory():
+    # ru_maxrss from os.wait4 would include this 300 MB block
+    block = np.ones(300 * 1024 * 1024 // 8)
+    seconds, peak = rcheck.timing(rcheck.run_child([
+        sys.executable, "-I", rcheck.__file__, "--plugin-seconds", "100",
+        "10"]))
+    assert seconds > 0 and 0 < peak < rcheck.own_peak_mb() - 250
+    del block
+
+
 @pytest.mark.skipif(not RSCRIPT, reason="RSCRIPT (microbiome 1.6.0) not set")
 def test_plugin_matches_r_microbiome():
     check = rcheck.crosscheck(RSCRIPT, "", quick=True)

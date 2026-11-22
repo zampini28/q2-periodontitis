@@ -7,6 +7,7 @@
 # 1. installs micromamba in ~/.local/bin if it is missing;
 # 2. creates the QIIME 2 amplicon 2024.10 environment (Q2_ENV, default
 #    q2-amplicon-2024.10), adds environment.yml and installs this plugin;
+#    only the channels of each yml are used, not those of ~/.condarc;
 # 3. creates the R environment with microbiome 1.6.0 (R_ENV, default
 #    r-microbiome-1.6.0, from r-microbiome-1.6.0.yml);
 # 4. runs the plugin and validation test suites, including the R
@@ -48,13 +49,14 @@ fi
 if ! micromamba env list | awk '{print $1}' | grep -qx "$Q2_ENV"; then
   log "creating $Q2_ENV"
   curl -sfL -o "$DATA/qiime2-amplicon-2024.10.yml" "$Q2_YML"
-  micromamba create -y -n "$Q2_ENV" -f "$DATA/qiime2-amplicon-2024.10.yml"
-  micromamba env update -y -n "$Q2_ENV" -f "$REPO/environment.yml"
+  micromamba create -y --override-channels -n "$Q2_ENV" -f "$DATA/qiime2-amplicon-2024.10.yml"
 fi
+# Outside the check above, so that an interrupted creation is completed
+micromamba install -y --override-channels -n "$Q2_ENV" -f "$REPO/environment.yml"
 
 if ! micromamba env list | awk '{print $1}' | grep -qx "$R_ENV"; then
   log "creating $R_ENV"
-  micromamba create -y -n "$R_ENV" -f "$HERE/r-microbiome-1.6.0.yml"
+  micromamba create -y --override-channels -n "$R_ENV" -f "$HERE/r-microbiome-1.6.0.yml"
 fi
 RSCRIPT=$(micromamba run -n "$R_ENV" which Rscript)
 export RSCRIPT

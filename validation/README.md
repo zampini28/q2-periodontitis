@@ -2,10 +2,8 @@
 
 This directory contains the code for the pre-specified multi-cohort
 validation described in [docs/ANALYSIS_PLAN.md](../docs/ANALYSIS_PLAN.md).
-The single-cohort SRP075100 results currently reported in
-[docs/VALIDATION.md](../docs/VALIDATION.md) are the legacy outputs in
-[results/](results/); the full multi-cohort analysis has not yet been
-reported.
+Its results, from the run of 21 November 2026, are in [results/](results/)
+and are reported in [docs/VALIDATION.md](../docs/VALIDATION.md).
 
 ## Requirements
 
@@ -19,8 +17,8 @@ reported.
 - Network access to ENA and SRA/BioSample.
 - About 60 GB of free disk for the raw reads plus about 12 GB for the
   environments, 4 cores and 15 GB of RAM.
-- About one day to process all 16 cohorts, plus the rarefaction robustness
-  runs.
+- About a day on 4 cores to process all 16 cohorts and run the analysis
+  (12 hours on 48 cores in the reported run, mostly downloads).
 
 ## Quick start
 
@@ -95,13 +93,15 @@ the analyses it enters.
 single cohort, pass another output directory if you do not want to add
 files to the repository.
 
-The files currently in `results/` are the legacy single-cohort outputs
-described in [docs/VALIDATION.md](../docs/VALIDATION.md). The current
-pipeline writes `samples/`, `qc.tsv`, `tables/` (including
+The pipeline writes `samples/`, `qc.tsv`, `tables/` (including
 `performance.tsv` and `simulation.tsv`), `performance_environment.json`,
 `figures/` and `REPORT.md` to the results directory passed to
 `analyse.sh`. The performance and simulation tables are synthetic
 engineering and validation results, not biological findings.
+`results/provenance/` holds the per-cohort software versions and the note
+on the one file taken from NCBI SRA. `discrimination.tsv`,
+`subject_indices.tsv`, `summary.md` and `therapy.tsv` at the top of
+`results/` are legacy outputs of the earlier single-cohort SRP075100 run.
 
 ## Reproducibility
 
@@ -114,10 +114,9 @@ engineering and validation results, not biological findings.
 
 ## Current status
 
-The multi-cohort pipeline is implemented, but its full 16-cohort results
-are not committed. `docs/VALIDATION.md` currently reports the SRP075100
-case study, the synthetic performance benchmark and the simulated
-known-truth validation; the full multi-cohort results are not yet
-reported. See [docs/VALIDATION.md](../docs/VALIDATION.md) and
-[docs/ANALYSIS_PLAN.md](../docs/ANALYSIS_PLAN.md) for the scientific scope
-and the planned analyses.
+The full run of all 16 cohorts finished on 21 November 2026 (12 hours on a
+48-core server). Its outputs are in `results/` and are reported in
+[docs/VALIDATION.md](../docs/VALIDATION.md), including the deviations from
+[docs/ANALYSIS_PLAN.md](../docs/ANALYSIS_PLAN.md). The R cross-check and
+benchmark were rerun on the same day after a fix to the memory
+measurement.

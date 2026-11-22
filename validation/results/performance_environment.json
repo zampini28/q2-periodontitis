@@ -1,13 +1,13 @@
 {
-  "python": "3.13.5",
-  "platform": "Linux-6.12.94+deb13-amd64-x86_64-with-glibc2.42",
-  "processor": "",
-  "cpu_count": 4,
-  "numpy": "2.5.4",
-  "pandas": "3.1.0",
-  "scipy": "1.18.1",
-  "biom": "2.1.18",
+  "python": "3.10.14",
+  "platform": "Linux-5.15.0-203-generic-x86_64-with-glibc2.35",
+  "processor": "x86_64",
+  "cpu_count": 48,
+  "numpy": "1.26.4",
+  "pandas": "2.2.2",
+  "scipy": "1.13.0",
+  "biom": "2.1.15",
   "q2_periodontitis": "2026.1.0",
-  "total_memory_gb": 31.08,
+  "total_memory_gb": 503.75,
   "repeats": 3
 }

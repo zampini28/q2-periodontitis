@@ -10,7 +10,7 @@ set -euo pipefail
 
 ACC=${1:?usage: download.sh <accession> <data_dir> [jobs]}
 DATA=${2:?usage: download.sh <accession> <data_dir> [jobs]}
-JOBS=${3:-4}
+JOBS=${3:-12}
 FIELDS=run_accession,sample_accession,sample_alias,sample_title,library_name,experiment_title,instrument_model,library_layout,read_count,base_count,fastq_ftp,fastq_md5,fastq_bytes
 mkdir -p "$DATA/$ACC/fastq"
 REPORT="$DATA/$ACC.runs.tsv"
