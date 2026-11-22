@@ -44,6 +44,11 @@ jobs:
           qiime dev refresh-cache
           qiime periodontitis --help
 
+      - name: Lint (flake8)
+        run: |
+          pip install flake8
+          flake8 q2_periodontitis
+
       - name: Run plugin tests with coverage
         run: |
           pytest --verbose q2_periodontitis/tests \

@@ -25,7 +25,8 @@ All notable changes to `q2-periodontitis` are documented in this file.
   from a cohort's metadata instead of stopping the whole analysis.
 - `summarize` cites Benjamini & Hochberg (1995) for its q-values.
 - The plugin code and tests pass flake8 (line length, blank lines, unused
-  imports); help text and behavior unchanged.
+  imports); help text and behavior unchanged. CI now runs flake8 on
+  `q2_periodontitis/`.
 
 ## [Unreleased] — documentation and CI
 
