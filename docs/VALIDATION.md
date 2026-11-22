@@ -210,10 +210,13 @@ median of 32%.
 
 ## Case study: SRP075100
 
-This section gives more detail on one independent cohort. The values come
-from the original single-cohort run (legacy files at the top of
-`validation/results/`); the final multi-cohort pipeline reproduced its
-AUCs and cut-off results to two decimals.
+This section gives more detail on one independent cohort, from the same
+run as the multi-cohort validation (naive Bayes): QC from
+`results/samples/SRP075100-nb.tsv`, results from `results/tables/`
+(`discrimination.tsv`, `cutoffs.tsv`, `therapy.tsv`). The per-genus
+resolution and the absent SMDI taxa come from the cohort's processed
+artifacts (`table.qza`, `taxonomy-nb.qza`, `mapping-nb.qza`), which are
+deposited with the data.
 
 ### Dataset
 
@@ -257,7 +260,7 @@ genera:
 
 | Genus | Reads named to species |
 |---|---|
-| *Campylobacter*, *Porphyromonas*, *Prevotella* | ≥ 0.94 |
+| *Campylobacter*, *Porphyromonas*, *Prevotella* | ≥ 0.93 |
 | *Treponema*, *Veillonella*, *Capnocytophaga*, *Fusobacterium* | 0.76–0.87 |
 | ***Streptococcus***, ***Actinomyces***, *Fretibacterium* | **0.27–0.29** |
 
@@ -302,18 +305,14 @@ cut-offs give:
 | 0 | subjects | 0.90 | 0.52 | 0.78 |
 | 0.4 (best in training) | subjects | 0.88 | 0.76 | 0.84 |
 | **0.5 (best in test)** | **subjects** | **0.85** | **0.90** | **0.87** |
-| 0.5 | samples | 0.79 | 0.74 | 0.78 |
 
-The cut-off that maximizes Youden's J in this dataset is 0.54, close to
-the published 0.5. Across all independent cohorts the same cut-off was
-less specific (pooled 0.81; see Q3).
+Across all independent cohorts the same cut-off was less specific
+(pooled 0.81; see Q3).
 
-For SMDI_simplified at its published cut-off of 0: subjects 0.60 / 0.90 /
-0.70 (sensitivity / specificity / accuracy), samples 0.62 / 0.88 / 0.70.
-That is specific but less sensitive. This is consistent with the authors'
-note that V4 data place the SMDI about one unit lower than V1–V3. The
-in-sample Youden cut-off is −1.46 (0.85 / 0.81). It was chosen on the
-same data, so it is descriptive only.
+For SMDI_simplified at its published cut-off of 0: 0.60 / 0.90 / 0.70
+(sensitivity / specificity / accuracy, subjects). That is specific but
+less sensitive. This is consistent with the authors' note that V4 data
+place the SMDI about one unit lower than V1–V3.
 
 **16 of the 49 SMDI species are absent from this V4 table**, including the
 top health-associated *S. sanguinis*, *A. naeslundii* and *S. mitis*, and

@@ -40,6 +40,11 @@ All notable changes to `q2-periodontitis` are documented in this file.
 - Forest plot (`fig1_forest`): the axis ends at 1.05 with a line at AUC = 1,
   so intervals reaching 1 are no longer cut; pooled intervals beyond the
   axis are marked with an arrow.
+- Remove the legacy single-cohort outputs at the top of `validation/results/`
+  (`discrimination.tsv`, `subject_indices.tsv`, `summary.md`,
+  `therapy.tsv`); the scripts that made them were replaced by the
+  multi-cohort pipeline, whose tables reproduce them. The SRP075100 case
+  study in `docs/VALIDATION.md` now cites the multi-cohort outputs.
 
 ## [Unreleased] — documentation and CI
 

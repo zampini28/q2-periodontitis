@@ -99,9 +99,7 @@ The pipeline writes `samples/`, `qc.tsv`, `tables/` (including
 `analyse.sh`. The performance and simulation tables are synthetic
 engineering and validation results, not biological findings.
 `results/provenance/` holds the per-cohort software versions and the note
-on the one file taken from NCBI SRA. `discrimination.tsv`,
-`subject_indices.tsv`, `summary.md` and `therapy.tsv` at the top of
-`results/` are legacy outputs of the earlier single-cohort SRP075100 run.
+on the one file taken from NCBI SRA.
 
 ## Reproducibility
 
