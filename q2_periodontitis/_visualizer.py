@@ -67,7 +67,8 @@ def analysis_units(indices, metadata, group_column, subject_column=None):
     meta_df = metadata.to_dataframe()
     keep = [group_column] + ([subject_column] if subject_column else [])
     design = meta_df[keep].dropna()
-    design.columns = ["__group__"] + (["__subject__"] if subject_column else [])
+    design.columns = (["__group__"]
+                      + (["__subject__"] if subject_column else []))
 
     metrics = index_columns(indices)
     merged = indices[metrics].join(design, how="inner")

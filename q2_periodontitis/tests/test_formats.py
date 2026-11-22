@@ -64,14 +64,16 @@ class TestFormatValidation(TestPluginBase):
                           (PeriodontalIndicesDeltaFormat, "deltas.tsv"),
                           (SocranskyMappingFormat, "mapping.tsv"),
                           (SocranskyReferenceFormat, "reference-valid.tsv"),
-                          (SocranskyReferenceFormat, "reference-extra-column.tsv"),
+                          (SocranskyReferenceFormat,
+                           "reference-extra-column.tsv"),
                           (DysbiosisSignatureFormat, "signature-valid.tsv")]:
             fmt(self.get_data_path(name), mode="r").validate()
 
     def test_indices_non_numeric(self):
         with self.assertRaisesRegex(ValidationError, "non-numeric"):
-            PeriodontalIndicesFormat(self.get_data_path("indices-non-numeric.tsv"),
-                                     mode="r").validate()
+            PeriodontalIndicesFormat(
+                self.get_data_path("indices-non-numeric.tsv"),
+                mode="r").validate()
 
     def test_indices_ragged(self):
         with self.assertRaisesRegex(ValidationError, "fields"):
@@ -84,7 +86,8 @@ class TestFormatValidation(TestPluginBase):
                                  mode="r").validate()
 
     def test_signature_invalid(self):
-        with self.assertRaisesRegex(ValidationError, "invalid direction 'bad'"):
+        with self.assertRaisesRegex(ValidationError,
+                                    "invalid direction 'bad'"):
             DysbiosisSignatureFormat(
                 self.get_data_path("signature-invalid-direction.tsv"),
                 mode="r").validate()
@@ -98,13 +101,15 @@ class TestFormatValidation(TestPluginBase):
 
     def test_reference_invalid_complex(self):
         with self.assertRaisesRegex(ValidationError, "invalid complex 'Pink'"):
-            SocranskyReferenceFormat(self.get_data_path("reference-invalid-complex.tsv"),
-                                     mode="r").validate()
+            SocranskyReferenceFormat(
+                self.get_data_path("reference-invalid-complex.tsv"),
+                mode="r").validate()
 
     def test_reference_requires_header(self):
         with self.assertRaisesRegex(ValidationError, "taxon.*complex"):
-            SocranskyReferenceFormat(self.get_data_path("reference-no-header.tsv"),
-                                     mode="r").validate()
+            SocranskyReferenceFormat(
+                self.get_data_path("reference-no-header.tsv"),
+                mode="r").validate()
 
     def test_reference_import_rejects_invalid(self):
         with self.assertRaises(ValidationError):
@@ -131,7 +136,8 @@ class TestTransformers(TestPluginBase):
     def test_indices_roundtrip(self):
         df = self.roundtrip(PeriodontalIndicesFormat, "indices.tsv")
         self.assertEqual(list(df.columns),
-                         ["SMDI", "SMDI_simplified", "PC2014_moderate", "qc_depth"])
+                         ["SMDI", "SMDI_simplified", "PC2014_moderate",
+                          "qc_depth"])
         self.assertTrue(df.loc["S2", ["SMDI", "SMDI_simplified"]].isna().all())
 
     def test_delta_roundtrip_keeps_string_subject_ids(self):
@@ -145,7 +151,8 @@ class TestTransformers(TestPluginBase):
 
     def test_reference_roundtrip(self):
         df = self.roundtrip(SocranskyReferenceFormat, "reference-valid.tsv")
-        self.assertEqual(list(df["taxon"]), ["Selenomonas noxia", "Lactobacillus casei"])
+        self.assertEqual(list(df["taxon"]),
+                         ["Selenomonas noxia", "Lactobacillus casei"])
         self.assertEqual(list(df["complex"]), ["Green", "Yellow"])
 
     def test_signature_roundtrip(self):
@@ -159,8 +166,8 @@ class TestTransformers(TestPluginBase):
                           (SocranskyMappingFormat, "mapping.tsv")]:
             _, md = self.transform_format(fmt, qiime2.Metadata, filename=name)
             self.assertIsInstance(md, qiime2.Metadata)
-        _, md = self.transform_format(PeriodontalIndicesDeltaFormat, qiime2.Metadata,
-                                      filename="deltas.tsv")
+        _, md = self.transform_format(PeriodontalIndicesDeltaFormat,
+                                      qiime2.Metadata, filename="deltas.tsv")
         self.assertEqual(list(md.ids), ["001", "P2"])
 
 

@@ -23,6 +23,9 @@ All notable changes to `q2-periodontitis` are documented in this file.
 - Factor `feature_units` out of `aggregate_counts` (no change in output).
 - Skip, with a warning, a therapy follow-up whose time label is missing
   from a cohort's metadata instead of stopping the whole analysis.
+- `summarize` cites Benjamini & Hochberg (1995) for its q-values.
+- The plugin code and tests pass flake8 (line length, blank lines, unused
+  imports); help text and behavior unchanged.
 
 ## [Unreleased] — documentation and CI
 

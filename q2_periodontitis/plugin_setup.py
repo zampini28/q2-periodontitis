@@ -36,9 +36,13 @@ plugin = Plugin(
     version=__version__,
     website='https://github.com/LaBiOmicS/q2-periodontitis',
     package='q2_periodontitis',
-    citations=[citations['socransky1998microbial'], citations['socransky2002dental']],
-    description='QIIME 2 plugin that collapses subgingival amplicon profiles into the Socransky microbial complexes and computes the published Subgingival Microbial Dysbiosis Index (SMDI).',
-    short_description='Plugin for Periodontal Biofilm & Dysbiosis Characterization.'
+    citations=[citations['socransky1998microbial'],
+               citations['socransky2002dental']],
+    description='QIIME 2 plugin that collapses subgingival amplicon profiles '
+                'into the Socransky microbial complexes and computes the '
+                'published Subgingival Microbial Dysbiosis Index (SMDI).',
+    short_description='Plugin for Periodontal Biofilm & Dysbiosis '
+                      'Characterization.'
 )
 
 # Register Directory Formats
@@ -117,14 +121,14 @@ plugin.methods.register_function(
         'custom_mapping': 'Optional taxon-to-complex reference table '
                           '(SocranskyReference: TSV with a header containing '
                           'the columns "taxon" and "complex", and optionally '
-                          '"level" = species|genus). Entries are added to, and '
-                          'override, the built-in reference.',
+                          '"level" = species|genus). Entries are added to, '
+                          'and override, the built-in reference.',
         'smdi_signature': 'Optional additional dysbiosis signature '
                           '(DysbiosisSignature: TSV with the columns "taxon", '
                           '"direction" = dysbiotic|normobiotic and "level" = '
                           'species|genus). When given, the indices include an '
-                          '"SMDI_custom" column computed from it with the SMDI '
-                          'method.'
+                          '"SMDI_custom" column computed from it with the '
+                          'SMDI method.'
     },
     parameter_descriptions={
         'min_confidence': 'Features whose taxonomy Confidence is below this '
@@ -242,6 +246,7 @@ plugin.visualizers.register_function(
                           'samples (sites, visits) are not counted as '
                           'independent observations.'
     },
+    citations=[citations['benjamini1995controlling']],
     name='Summarize complexes and dysbiosis indices',
     description='Generates an offline dashboard (.qzv) with complex '
                 'profiles, index distributions, taxonomic-resolution '
@@ -250,4 +255,4 @@ plugin.visualizers.register_function(
                 'Benjamini-Hochberg q-values.'
 )
 
-import q2_periodontitis._transformer
+import q2_periodontitis._transformer  # noqa: E402, F401 (registers them)

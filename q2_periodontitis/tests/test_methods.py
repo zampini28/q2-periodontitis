@@ -48,19 +48,22 @@ class TestParser(TestPluginBase):
     def test_silva_binomial(self):
         self.assertEqual(
             parse_taxonomy_string(
-                "d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; "
-                "f__Porphyromonadaceae; g__Porphyromonas; s__Porphyromonas_gingivalis"),
+                "d__Bacteria; p__Bacteroidota; c__Bacteroidia; "
+                "o__Bacteroidales; f__Porphyromonadaceae; g__Porphyromonas; "
+                "s__Porphyromonas_gingivalis"),
             ("Porphyromonas", "Porphyromonas gingivalis"))
 
     def test_silva_numeric_genus_suffix(self):
         self.assertEqual(
             parse_taxonomy_string(
-                "d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; "
-                "f__Prevotellaceae; g__Prevotella_7; s__Prevotella_melaninogenica"),
+                "d__Bacteria; p__Bacteroidota; c__Bacteroidia; "
+                "o__Bacteroidales; f__Prevotellaceae; g__Prevotella_7; "
+                "s__Prevotella_melaninogenica"),
             ("Prevotella", "Prevotella melaninogenica"))
         self.assertEqual(
             parse_taxonomy_string(
-                "d__Bacteria; p__Spirochaetota; c__Spirochaetia; o__Spirochaetales; "
+                "d__Bacteria; p__Spirochaetota; c__Spirochaetia; "
+                "o__Spirochaetales; "
                 "f__Spirochaetaceae; g__Treponema_2; s__uncultured_bacterium"),
             ("Treponema", None))
 
@@ -68,19 +71,22 @@ class TestParser(TestPluginBase):
         # Genus and epithet suffixes (GTDB / Greengenes2)
         self.assertEqual(
             parse_taxonomy_string(
-                "d__Bacteria; p__Fusobacteriota; c__Fusobacteriia; o__Fusobacteriales; "
-                "f__Fusobacteriaceae; g__Fusobacterium_A; s__Fusobacterium_A nucleatum_D"),
+                "d__Bacteria; p__Fusobacteriota; c__Fusobacteriia; "
+                "o__Fusobacteriales; f__Fusobacteriaceae; g__Fusobacterium_A; "
+                "s__Fusobacterium_A nucleatum_D"),
             ("Fusobacterium", "Fusobacterium nucleatum"))
         self.assertEqual(
             parse_taxonomy_string(
-                "d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; "
-                "f__Bacteroidaceae; g__Prevotella_D; s__Prevotella_D intermedia"),
+                "d__Bacteria; p__Bacteroidota; c__Bacteroidia; "
+                "o__Bacteroidales; f__Bacteroidaceae; g__Prevotella_D; "
+                "s__Prevotella_D intermedia"),
             ("Prevotella", "Prevotella intermedia"))
 
     def test_greengenes_epithet_only(self):
         self.assertEqual(
             parse_taxonomy_string(
-                "k__Bacteria; p__Bacteroidetes; c__Bacteroidia; o__Bacteroidales; "
+                "k__Bacteria; p__Bacteroidetes; c__Bacteroidia; "
+                "o__Bacteroidales; "
                 "f__Porphyromonadaceae; g__Porphyromonas; s__gingivalis"),
             ("Porphyromonas", "Porphyromonas gingivalis"))
 
@@ -93,7 +99,8 @@ class TestParser(TestPluginBase):
 
     def test_oral_taxon_number_is_not_a_suffix(self):
         _, species = parse_taxonomy_string(
-            "d__Bacteria; g__Fretibacterium; s__Fretibacterium_human_oral_taxon_361")
+            "d__Bacteria; g__Fretibacterium; "
+            "s__Fretibacterium_human_oral_taxon_361")
         self.assertEqual(species, "Fretibacterium human oral taxon 361")
 
     def test_uninformative_labels(self):
@@ -111,18 +118,20 @@ class TestParser(TestPluginBase):
     def test_synonyms(self):
         self.assertEqual(
             parse_taxonomy_string(
-                "d__Bacteria; g__Tannerella; s__Bacteroides_forsythus", self.synonyms),
+                "d__Bacteria; g__Tannerella; s__Bacteroides_forsythus",
+                self.synonyms),
             ("Tannerella", "Tannerella forsythia"))
         self.assertEqual(
             parse_taxonomy_string(
-                "d__Bacteria; g__Wolinella; s__Wolinella_recta", self.synonyms)[1],
+                "d__Bacteria; g__Wolinella; s__Wolinella_recta",
+                self.synonyms)[1],
             "Campylobacter rectus")
         self.assertEqual(
             parse_taxonomy_string(
-                "d__Bacteria; g__Peptostreptococcus; s__Peptostreptococcus_micros",
+                "d__Bacteria; g__Peptostreptococcus; "
+                "s__Peptostreptococcus_micros",
                 self.synonyms)[1],
             "Parvimonas micra")
-
 
     def test_ehomd_bracketed_genus_and_placeholder_genera(self):
         self.assertEqual(
@@ -134,16 +143,19 @@ class TestParser(TestPluginBase):
         self.assertEqual(
             parse_taxonomy_string(
                 "k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;"
-                "f__Bacteroidales_[F-2];g__Bacteroidales_[G-2];s__bacterium_HMT_274"),
+                "f__Bacteroidales_[F-2];g__Bacteroidales_[G-2];"
+                "s__bacterium_HMT_274"),
             ("Bacteroidales [G-2]", "Bacteroidales [G-2] bacterium HMT 274"))
 
     def test_ehomd_subspecies_and_hmt(self):
         self.assertEqual(
             parse_taxonomy_string(
-                "k__Bacteria;g__Fusobacterium;s__nucleatum_subsp._polymorphum")[1],
+                "k__Bacteria;g__Fusobacterium;"
+                "s__nucleatum_subsp._polymorphum")[1],
             "Fusobacterium nucleatum subsp. polymorphum")
         self.assertEqual(
-            parse_taxonomy_string("k__Bacteria;g__Fretibacterium;s__sp._HMT_360")[1],
+            parse_taxonomy_string(
+                "k__Bacteria;g__Fretibacterium;s__sp._HMT_360")[1],
             "Fretibacterium sp. HMT 360")
 
     def test_multi_species_labels(self):
@@ -162,7 +174,8 @@ class TestParser(TestPluginBase):
             "Streptococcus infantis")
         self.assertEqual(
             parse_taxonomy_string(
-                "k__Bacteria;g__Streptococcus;s__oralis_subsp._dentisani_clade_058")[1],
+                "k__Bacteria;g__Streptococcus;"
+                "s__oralis_subsp._dentisani_clade_058")[1],
             "Streptococcus oralis subsp. dentisani")
 
     def test_taxon_key(self):
@@ -171,12 +184,14 @@ class TestParser(TestPluginBase):
                          "hmt 360")
         self.assertEqual(taxon_key("Bacteroidales [G-2] bacterium HMT 274"),
                          "hmt 274")
-        self.assertEqual(taxon_key("Treponema Denticola"), "treponema denticola")
+        self.assertEqual(taxon_key("Treponema Denticola"),
+                         "treponema denticola")
 
     def test_hmt_number(self):
         self.assertEqual(hmt_number("Fretibacterium sp. HMT 360"), 360)
         self.assertEqual(hmt_number("Desulfobulbus sp. oral taxon 041"), 41)
-        self.assertEqual(hmt_number("Fretibacterium human oral taxon 361"), 361)
+        self.assertEqual(
+            hmt_number("Fretibacterium human oral taxon 361"), 361)
         self.assertEqual(hmt_number("TM7 sp. HOT-356"), 356)
         self.assertIsNone(hmt_number("Treponema medium"))
         self.assertIsNone(hmt_number(None))
@@ -224,41 +239,51 @@ class TestReference(TestPluginBase):
                     "g__Treponema",
                     "g__Aggregatibacter; s__actinomycetemcomitans"]:
             self.assertEqual(self.assign(tax), ("Other", "unassigned"), tax)
-        self.assertEqual(self.assign("g__Prevotella; s__Prevotella_intermedia"),
-                         ("Orange", "species"))
+        self.assertEqual(
+            self.assign("g__Prevotella; s__Prevotella_intermedia"),
+            ("Orange", "species"))
 
     def test_actinomyces_genus_is_blue(self):
         self.assertEqual(self.assign("g__Actinomyces; s__sp._HMT_169"),
                          ("Blue", "genus"))
-        self.assertEqual(self.assign("g__Actinomyces; s__Actinomyces_naeslundii"),
-                         ("Blue", "species"))
+        self.assertEqual(
+            self.assign("g__Actinomyces; s__Actinomyces_naeslundii"),
+            ("Blue", "species"))
         # A. odontolyticus (now Schaalia) is Purple, not Blue
-        self.assertEqual(self.assign("g__Actinomyces; s__Actinomyces_odontolyticus"),
-                         ("Purple", "species"))
+        self.assertEqual(
+            self.assign("g__Actinomyces; s__Actinomyces_odontolyticus"),
+            ("Purple", "species"))
         self.assertEqual(self.assign("g__Schaalia; s__odontolytica"),
                          ("Purple", "species"))
 
     def test_synonyms_resolve_to_complex(self):
-        self.assertEqual(self.assign("g__Tannerella; s__Bacteroides_forsythus"),
-                         ("Red", "species"))
+        self.assertEqual(
+            self.assign("g__Tannerella; s__Bacteroides_forsythus"),
+            ("Red", "species"))
         self.assertEqual(self.assign("g__Streptococcus; s__sanguis"),
                          ("Yellow", "species"))
         self.assertEqual(
-            self.assign("g__Peptostreptococcaceae_[G-6]; s__[Eubacterium]_nodatum"),
+            self.assign("g__Peptostreptococcaceae_[G-6]; "
+                        "s__[Eubacterium]_nodatum"),
             ("Orange", "species"))
 
     def test_ambiguous_labels(self):
-        self.assertEqual(self.assign("g__Streptococcus; s__Streptococcus_mitis/oralis"),
-                         ("Yellow", "species"))
-        self.assertEqual(self.assign("g__Streptococcus; s__Streptococcus_mitis/mutans"),
-                         ("Other", "ambiguous"))
         self.assertEqual(
-            self.assign("g__Streptococcus; s__Streptococcus_constellatus/gordonii"),
+            self.assign("g__Streptococcus; s__Streptococcus_mitis/oralis"),
+            ("Yellow", "species"))
+        self.assertEqual(
+            self.assign("g__Streptococcus; s__Streptococcus_mitis/mutans"),
+            ("Other", "ambiguous"))
+        self.assertEqual(
+            self.assign("g__Streptococcus; "
+                        "s__Streptococcus_constellatus/gordonii"),
             ("Other", "ambiguous"))
 
     def test_invalid_complex(self):
-        ref = pd.DataFrame({"taxon": ["Selenomonas noxia"], "complex": ["Pink"]})
-        with self.assertRaisesRegex(ValueError, "Invalid complex name.*'Pink'"):
+        ref = pd.DataFrame({"taxon": ["Selenomonas noxia"],
+                            "complex": ["Pink"]})
+        with self.assertRaisesRegex(ValueError,
+                                    "Invalid complex name.*'Pink'"):
             build_reference(ref, self.synonyms)
 
     def test_invalid_level(self):
@@ -283,11 +308,13 @@ class TestReference(TestPluginBase):
         # 49 species with MDG >= 0.4: 31 dysbiotic, 18 normobiotic
         self.assertEqual(len(full), 49)
         self.assertEqual((full["direction"] == "dysbiotic").sum(), 31)
-        self.assertTrue((full["mean_decrease_gini"].astype(float) >= 0.4).all())
+        self.assertTrue(
+            (full["mean_decrease_gini"].astype(float) >= 0.4).all())
         self.assertFalse(full["taxon"].map(taxon_key).duplicated().any())
         sig = load_signature(SMDI_SIMPLIFIED)
         self.assertEqual(dict(zip(sig["taxon"], sig["direction"])),
-                         {"Fretibacterium": "dysbiotic", "Treponema": "dysbiotic",
+                         {"Fretibacterium": "dysbiotic",
+                          "Treponema": "dysbiotic",
                           "Actinomyces": "normobiotic"})
 
 
@@ -332,7 +359,8 @@ class TestCollapseComplexes(CollapseFixture):
         np.testing.assert_allclose(complexes.sum(axis=1).values, [1, 1, 1, 0])
         self.assertEqual(mapping.loc["F5", "Complex"], "Other")
         self.assertEqual(mapping.loc["F5", "Resolution"], "unassigned")
-        self.assertEqual(mapping.loc["F0", "Species"], "Porphyromonas gingivalis")
+        self.assertEqual(mapping.loc["F0", "Species"],
+                         "Porphyromonas gingivalis")
 
     def test_indices_columns(self):
         _, indices, _ = collapse_complexes(self.table, self.taxonomy)
@@ -340,9 +368,6 @@ class TestCollapseComplexes(CollapseFixture):
                          ["SMDI", "SMDI_simplified", "PC2014_moderate",
                           "qc_depth", "qc_assigned_fraction",
                           "qc_species_fraction"])
-
-
-
 
     def test_smdi_simplified_hand_computed(self):
         _, indices, _ = collapse_complexes(self.table, self.taxonomy)
@@ -379,7 +404,8 @@ class TestCollapseComplexes(CollapseFixture):
         ln = math.log
         dys = (ln(0.1 + pc) + 30 * ln(pc)) / 31
         norm = (ln(0.2 + pc) + ln(0.1 + pc) + 16 * ln(pc)) / 18
-        self.assertAlmostEqual(indices.loc["S1", "SMDI"], dys - norm, places=12)
+        self.assertAlmostEqual(indices.loc["S1", "SMDI"], dys - norm,
+                               places=12)
         self.assertTrue(np.isnan(indices.loc["S4", "SMDI"]))
 
     def test_fixed_smdi_pseudocount(self):
@@ -405,8 +431,8 @@ class TestCollapseComplexes(CollapseFixture):
         alone = self.table.filter(["S1"], inplace=False)
         _, single, _ = collapse_complexes(alone, self.taxonomy,
                                           smdi_pseudocount=eps)
-        self.assertAlmostEqual(full.loc["S1", "SMDI"], single.loc["S1", "SMDI"],
-                               places=12)
+        self.assertAlmostEqual(full.loc["S1", "SMDI"],
+                               single.loc["S1", "SMDI"], places=12)
         # The original pseudocount changes when S2 (1000 reads) is removed
         _, full0, _ = collapse_complexes(self.table, self.taxonomy)
         _, single0, _ = collapse_complexes(alone, self.taxonomy)
@@ -424,7 +450,8 @@ class TestCollapseComplexes(CollapseFixture):
                                       "Streptococcus gordonii"],
                             "direction": ["dysbiotic", "normobiotic"],
                             "level": ["species", "species"]})
-        with self.assertWarnsRegex(UserWarning, "SMDI_custom.*filifactor alocis"):
+        with self.assertWarnsRegex(UserWarning,
+                                   "SMDI_custom.*filifactor alocis"):
             collapse_complexes(self.table, self.taxonomy, smdi_signature=sig)
 
     def test_invalid_signatures(self):
@@ -469,7 +496,8 @@ class TestCollapseComplexes(CollapseFixture):
                            ["S1"])
         _, indices, mapping = collapse_complexes(table, _taxonomy(taxa))
         self.assertAlmostEqual(indices.loc["S1", "PC2014_moderate"], 0.35)
-        self.assertEqual(list(mapping["PC2014"]), ["yes", "yes", "yes", "no", "no"])
+        self.assertEqual(list(mapping["PC2014"]),
+                         ["yes", "yes", "yes", "no", "no"])
         self.assertEqual(mapping.loc["D", "Complex"], "Red")
 
     def test_min_confidence(self):
@@ -526,14 +554,17 @@ class TestCollapseComplexes(CollapseFixture):
         custom = pd.DataFrame({"taxon": ["Lactobacillus casei"],
                                "complex": ["Extended"]})
         with self.assertRaisesRegex(ValueError, "Invalid complex name"):
-            collapse_complexes(self.table, self.taxonomy, custom_mapping=custom)
+            collapse_complexes(self.table, self.taxonomy,
+                               custom_mapping=custom)
         custom = pd.DataFrame({"name": ["Lactobacillus casei"],
                                "complex": ["Red"]})
         with self.assertRaisesRegex(ValueError, "taxon"):
-            collapse_complexes(self.table, self.taxonomy, custom_mapping=custom)
+            collapse_complexes(self.table, self.taxonomy,
+                               custom_mapping=custom)
 
     def test_action_with_artifacts(self):
-        table = qiime2.Artifact.import_data("FeatureTable[Frequency]", self.table)
+        table = qiime2.Artifact.import_data("FeatureTable[Frequency]",
+                                            self.table)
         taxonomy = qiime2.Artifact.import_data("FeatureData[Taxonomy]",
                                                self.taxonomy)
         reference = qiime2.Artifact.import_data(
@@ -662,7 +693,8 @@ class TestDeltaIndices(TestPluginBase):
         return qiime2.Metadata(df)
 
     def test_success(self):
-        md = self.metadata(["P1", "P1", "P2", "P2"], ["Pre", "Post", "Pre", "Post"],
+        md = self.metadata(["P1", "P1", "P2", "P2"],
+                           ["Pre", "Post", "Pre", "Post"],
                            extra={"SMDI": ["x"] * 4})  # colliding column name
         res = delta_indices(self.indices, md, subject_col="subject",
                             group_col="visit", baseline_group="Pre",
@@ -681,19 +713,24 @@ class TestDeltaIndices(TestPluginBase):
         self.assertAlmostEqual(res.loc["P2", "SMDI"], -0.5)
 
     def test_unpaired_subjects_are_skipped(self):
-        md = self.metadata(["P1", "P1", "P2", "P3"], ["Pre", "Post", "Pre", "Post"])
-        res = delta_indices(self.indices, md, "subject", "visit", "Pre", "Post")
+        md = self.metadata(["P1", "P1", "P2", "P3"],
+                           ["Pre", "Post", "Pre", "Post"])
+        res = delta_indices(self.indices, md, "subject", "visit", "Pre",
+                            "Post")
         self.assertEqual(list(res.index), ["P1"])
 
     def test_repeated_samples_are_averaged(self):
         # P1 has two baseline sites: their mean (1.5 + 0.5) / 2 = 1.0 is used
-        md = self.metadata(["P1", "P1", "P1", "P2"], ["Pre", "Post", "Pre", "Pre"])
-        res = delta_indices(self.indices, md, "subject", "visit", "Pre", "Post")
+        md = self.metadata(["P1", "P1", "P1", "P2"],
+                           ["Pre", "Post", "Pre", "Pre"])
+        res = delta_indices(self.indices, md, "subject", "visit", "Pre",
+                            "Post")
         self.assertEqual(list(res.index), ["P1"])
         self.assertAlmostEqual(res.loc["P1", "SMDI"], -0.2 - 1.0)
 
     def test_no_pairs_raise(self):
-        md = self.metadata(["P1", "P2", "P3", "P4"], ["Pre", "Post", "Pre", "Post"])
+        md = self.metadata(["P1", "P2", "P3", "P4"],
+                           ["Pre", "Post", "Pre", "Post"])
         with self.assertRaisesRegex(ValueError, "No subject"):
             delta_indices(self.indices, md, "subject", "visit", "Pre", "Post")
 
@@ -703,12 +740,15 @@ class TestDeltaIndices(TestPluginBase):
             delta_indices(self.indices, md, "patient", "visit", "Pre", "Post")
 
     def test_action_output_type(self):
-        indices = qiime2.Artifact.import_data("PeriodontalIndices", self.indices)
-        md = self.metadata(["P1", "P1", "P2", "P2"], ["Pre", "Post", "Pre", "Post"])
+        indices = qiime2.Artifact.import_data("PeriodontalIndices",
+                                              self.indices)
+        md = self.metadata(["P1", "P1", "P2", "P2"],
+                           ["Pre", "Post", "Pre", "Post"])
         delta, = self.plugin.actions["delta_indices"](
             indices=indices, metadata=md, subject_col="subject",
             group_col="visit", baseline_group="Pre", target_group="Post")
-        self.assertEqual(str(delta.type), "SampleData[PeriodontalIndicesDelta]")
+        self.assertEqual(str(delta.type),
+                         "SampleData[PeriodontalIndicesDelta]")
         self.assertEqual(list(delta.view(pd.DataFrame).index), ["P1", "P2"])
 
 

@@ -16,14 +16,17 @@ from q2_periodontitis._visualizer import (
 class TestBenjaminiHochberg(unittest.TestCase):
 
     def test_hand_computed(self):
-        # p sorted: 0.01, 0.02, 0.03, 0.04 (n=4) -> p*n/rank = 0.04, 0.04, 0.04, 0.04
-        np.testing.assert_allclose(benjamini_hochberg([0.04, 0.01, 0.03, 0.02]),
-                                   [0.04, 0.04, 0.04, 0.04])
+        # p sorted: 0.01, 0.02, 0.03, 0.04 (n=4)
+        # -> p*n/rank = 0.04, 0.04, 0.04, 0.04
+        np.testing.assert_allclose(
+            benjamini_hochberg([0.04, 0.01, 0.03, 0.02]),
+            [0.04, 0.04, 0.04, 0.04])
         # 0.01*3/1=0.03, 0.04*3/2=0.06, 0.5*3/3=0.5
         np.testing.assert_allclose(benjamini_hochberg([0.5, 0.01, 0.04]),
                                    [0.5, 0.03, 0.06])
         # monotonicity: 0.03*2/1=0.06 > 0.04*2/2=0.04 -> both 0.04
-        np.testing.assert_allclose(benjamini_hochberg([0.03, 0.04]), [0.04, 0.04])
+        np.testing.assert_allclose(benjamini_hochberg([0.03, 0.04]),
+                                   [0.04, 0.04])
         self.assertEqual(len(benjamini_hochberg([])), 0)
 
 
@@ -47,7 +50,8 @@ class TestSummarize(TestPluginBase):
             index=self.ids, columns=COMPLEXES)
         self.mapping = pd.DataFrame({"Complex": ["Red", "Other"],
                                      "Resolution": ["species", "unassigned"]},
-                                    index=pd.Index(["F1", "F2"], name="Feature ID"))
+                                    index=pd.Index(["F1", "F2"],
+                                                   name="Feature ID"))
         self.metadata = qiime2.Metadata(pd.DataFrame({
             "status": ["health"] * 6 + ["periodontitis"] * 6,
             "subject": ["a", "a", "b", "b", "c", "c",
@@ -73,12 +77,14 @@ class TestSummarize(TestPluginBase):
         self.assertIsNone(self.stats_table(html))
         for f in ["index.html", "css/style.css", "data/complexes.tsv",
                   "data/indices.tsv"]:
-            self.assertTrue(os.path.exists(os.path.join(self.temp_dir.name, f)), f)
+            self.assertTrue(
+                os.path.exists(os.path.join(self.temp_dir.name, f)), f)
         self.assertIn("Reads per sample", html)
 
     def test_metadata_alone_runs_no_test(self):
         # No blanket testing of every metadata column
-        self.assertIsNone(self.stats_table(self.render(metadata=self.metadata)))
+        self.assertIsNone(
+            self.stats_table(self.render(metadata=self.metadata)))
 
     def test_two_group_comparison(self):
         html = self.render(metadata=self.metadata, group_column="status")
@@ -131,7 +137,8 @@ class TestSummarize(TestPluginBase):
 
     def test_skipped_test_warns(self):
         self.indices["PC2014_moderate"] = 1.0  # identical values
-        with self.assertWarnsRegex(UserWarning, "Skipping test of 'PC2014_moderate'"):
+        with self.assertWarnsRegex(UserWarning,
+                                   "Skipping test of 'PC2014_moderate'"):
             summarize(self.temp_dir.name, self.complexes, self.indices, None,
                       self.metadata, "site")
 

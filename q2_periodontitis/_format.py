@@ -2,6 +2,7 @@ import qiime2.plugin.model as model
 
 from ._methods import COMPLEXES, DIRECTIONS, LEVELS
 
+
 class NumericTableFormat(model.TextFileFormat):
     """Tab-separated table: an ID column followed by numeric columns; empty
     fields are missing values."""
@@ -37,11 +38,13 @@ class NumericTableFormat(model.TextFileFormat):
                         float(value)
                     except ValueError:
                         raise model.ValidationError(
-                            "Line %d: non-numeric value %r." % (line_no, value))
+                            "Line %d: non-numeric value %r."
+                            % (line_no, value))
 
 
 class SocranskyComplexesFormat(NumericTableFormat):
     pass
+
 
 SocranskyComplexesDirectoryFormat = model.SingleFileDirectoryFormat(
     'SocranskyComplexesDirectoryFormat',
@@ -49,8 +52,10 @@ SocranskyComplexesDirectoryFormat = model.SingleFileDirectoryFormat(
     SocranskyComplexesFormat
 )
 
+
 class PeriodontalIndicesFormat(NumericTableFormat):
     pass
+
 
 PeriodontalIndicesDirectoryFormat = model.SingleFileDirectoryFormat(
     'PeriodontalIndicesDirectoryFormat',
@@ -58,15 +63,19 @@ PeriodontalIndicesDirectoryFormat = model.SingleFileDirectoryFormat(
     PeriodontalIndicesFormat
 )
 
+
 class PeriodontalIndicesDeltaFormat(NumericTableFormat):
-    """Per-subject deltas; the first column (``subject-id``) holds subject IDs."""
+    """Per-subject deltas; the first column (``subject-id``) holds the
+    subject IDs."""
     pass
+
 
 PeriodontalIndicesDeltaDirectoryFormat = model.SingleFileDirectoryFormat(
     'PeriodontalIndicesDeltaDirectoryFormat',
     'deltas.tsv',
     PeriodontalIndicesDeltaFormat
 )
+
 
 class SocranskyMappingFormat(model.TextFileFormat):
     def _validate_(self, level):
@@ -75,7 +84,9 @@ class SocranskyMappingFormat(model.TextFileFormat):
             if not header:
                 raise model.ValidationError("File is empty.")
             if "\t" not in header:
-                raise model.ValidationError("Header line must be tab-separated.")
+                raise model.ValidationError(
+                    "Header line must be tab-separated.")
+
 
 SocranskyMappingDirectoryFormat = model.SingleFileDirectoryFormat(
     'SocranskyMappingDirectoryFormat',
@@ -123,6 +134,7 @@ class SocranskyReferenceFormat(model.TextFileFormat):
                         "Line %d: invalid complex %r. Valid complexes: %s."
                         % (line_no, complex_name, ', '.join(COMPLEXES)))
 
+
 SocranskyReferenceDirectoryFormat = model.SingleFileDirectoryFormat(
     'SocranskyReferenceDirectoryFormat',
     'reference.tsv',
@@ -149,7 +161,8 @@ class DysbiosisSignatureFormat(model.TextFileFormat):
                     "Header must be tab-separated and contain the columns "
                     "'taxon', 'direction' and 'level'; missing: %s."
                     % ', '.join(missing))
-            idx = {c: columns.index(c) for c in ('taxon', 'direction', 'level')}
+            idx = {c: columns.index(c)
+                   for c in ('taxon', 'direction', 'level')}
 
             for line_no, line in enumerate(fh, start=2):
                 if max_lines is not None and line_no > max_lines + 1:
@@ -175,6 +188,7 @@ class DysbiosisSignatureFormat(model.TextFileFormat):
                     raise model.ValidationError(
                         "Line %d: invalid level %r. Valid: %s."
                         % (line_no, tax_level, ', '.join(LEVELS)))
+
 
 DysbiosisSignatureDirectoryFormat = model.SingleFileDirectoryFormat(
     'DysbiosisSignatureDirectoryFormat',
