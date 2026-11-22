@@ -10,7 +10,8 @@ readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 authors = [
-    { name = "Fabiano Menegidio", email = "fmenegidio@gmail.com" }
+    { name = "Fabiano Menegidio", email = "fmenegidio@gmail.com" },
+    { name = "Caio Martins Zampini", email = "caio.zampini@gmail.com" }
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
