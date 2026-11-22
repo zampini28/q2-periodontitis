@@ -37,6 +37,9 @@ All notable changes to `q2-periodontitis` are documented in this file.
   cohort enters only the stage correlation; the pooled SMDI AUC is 0.94
   (0.91–0.98) in six cohorts instead of 0.90 (0.81–1.00) in seven. Recorded
   as a deviation in `docs/VALIDATION.md`.
+- Forest plot (`fig1_forest`): the axis ends at 1.05 with a line at AUC = 1,
+  so intervals reaching 1 are no longer cut; pooled intervals beyond the
+  axis are marked with an arrow.
 
 ## [Unreleased] — documentation and CI
 

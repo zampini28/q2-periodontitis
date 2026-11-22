@@ -74,6 +74,16 @@ def label(cohort):
 disc = read("discrimination.tsv")
 meta = read("meta_auc.tsv")
 clf = PRIMARY_CLASSIFIER
+# Pooled CIs and prediction intervals come from a normal approximation and
+# can pass AUC = 1; the axis cuts them at XMAX and an arrowhead marks the cut
+XMAX = 1.05
+
+
+def mark_cut(ax, hi, y, color):
+    if hi > XMAX:
+        ax.plot(XMAX, y, marker=">", color=color, ms=3.5, clip_on=False)
+
+
 sets = [("independent", "primary", "Independent cohorts"),
         ("non-independent", "non-independent",
          "Cohorts used to derive or test the SMDI")]
@@ -100,11 +110,14 @@ for ax, (set_name, val, title) in zip(axes, sets):
                     [yy, yy + 0.18, yy, yy - 0.18], color=COLOR[m], lw=0)
             ax.plot([p["pi_low"], p["pi_high"]], [yy, yy], color=COLOR[m],
                     lw=0.8, ls=":")
+            mark_cut(ax, max(p["ci_high"], p["pi_high"]), yy, COLOR[m])
     ax.set_yticks(list(y) + ([0.6] if not meta.empty else []))
     ax.set_yticklabels([label(n) for n in names]
                        + (["Pooled (REML, HKSJ)"] if not meta.empty else []))
     ax.axvline(0.5, color=INK2, lw=0.8, ls="--")
-    ax.set_xlim(0.3, 1.0)
+    ax.axvline(1.0, color=INK2, lw=0.8)
+    ax.set_xlim(0.3, XMAX)
+    ax.set_xticks([0.4, 0.6, 0.8, 1.0])
     ax.set_title(title, fontsize=8, color=INK, loc="left")
 axes[0].legend(loc="lower left", fontsize=7)
 fig.supxlabel("Subject-level AUC, health vs periodontitis (95%% CI); "
