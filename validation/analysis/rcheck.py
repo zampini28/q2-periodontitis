@@ -28,7 +28,6 @@ Writes:
     <results_dir>/figures/fig7_r_benchmark.png and .svg
 """
 import argparse
-import json
 import os
 import subprocess
 import sys

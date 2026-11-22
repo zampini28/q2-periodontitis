@@ -80,7 +80,8 @@ for c in cohorts[cohorts["case_control"] == "yes"].itertuples():
             disc_rows.append({
                 "cohort": c.cohort, "classifier": clf, "meta": c.meta,
                 "independent": c.independent, "region": c.region,
-                "measure": m, "n_health": len(neg), "n_periodontitis": len(pos),
+                "measure": m, "n_health": len(neg),
+                "n_periodontitis": len(pos),
                 "median_health": neg.median(),
                 "median_periodontitis": pos.median(), "auc": a,
                 "ci_low": lo, "ci_high": hi, "se_bootstrap": bse,
@@ -363,7 +364,8 @@ for first, second, key in REGION_PAIRS:
         for m in [PRIMARY, "SMDI_simplified", COMPARATOR]:
             d = both.dropna(subset=[m + "_1", m + "_2"])
             shift = d[m + "_2"] - d[m + "_1"]
-            subj = d.groupby(["subject", "status"])[[m + "_1", m + "_2"]].mean()
+            subj = d.groupby(["subject", "status"])[
+                [m + "_1", m + "_2"]].mean()
             subj = subj.reset_index()
             aucs = [st.auc(subj.loc[subj["status"] == "periodontitis", col],
                            subj.loc[subj["status"] == "health", col])

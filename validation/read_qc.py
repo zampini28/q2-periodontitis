@@ -69,8 +69,10 @@ def main():
     total = sum(lengths.values())
     print("reads sampled: %d" % total)
     q = np.percentile(list(lengths.elements()), [5, 25, 50, 75, 95])
-    print("length percentiles 5/25/50/75/95: %s" % " ".join("%d" % v for v in q))
-    print("primers found in the first 80 nt (fraction; most common end position):")
+    print("length percentiles 5/25/50/75/95: %s"
+          % " ".join("%d" % v for v in q))
+    print("primers found in the first 80 nt "
+          "(fraction; most common end position):")
     for name, c in hits.items():
         n = sum(c.values())
         if n / total > 0.05:
@@ -87,8 +89,10 @@ def main():
         if len(col) < 0.05 * total:
             break
         a, b, c = np.percentile(col, [25, 50, 75])
-        print("  %3d: %2d/%2d/%2d  %.2f" % (pos + 1, a, b, c, len(col) / total))
-    print("distinct quality values: %d" % len(np.unique(mat[~np.isnan(mat)])))
+        print("  %3d: %2d/%2d/%2d  %.2f"
+              % (pos + 1, a, b, c, len(col) / total))
+    print("distinct quality values: %d"
+          % len(np.unique(mat[~np.isnan(mat)])))
 
 
 if __name__ == "__main__":

@@ -14,7 +14,6 @@ Writes:
     <results_dir>/figures/fig6_simulation.svg
 """
 import argparse
-import json
 import os
 import sys
 import warnings

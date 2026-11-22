@@ -39,7 +39,8 @@ plt.rcParams.update({
     "font.family": "DejaVu Sans", "font.size": 8, "axes.edgecolor": INK2,
     "axes.labelcolor": INK, "xtick.color": INK2, "ytick.color": INK2,
     "axes.spines.top": False, "axes.spines.right": False,
-    "axes.grid": True, "axes.axisbelow": True, "grid.color": GRID, "grid.linewidth": 0.6,
+    "axes.grid": True, "axes.axisbelow": True, "grid.color": GRID,
+    "grid.linewidth": 0.6,
     "legend.frameon": False, "svg.fonttype": "none"})
 
 results = sys.argv[1]
