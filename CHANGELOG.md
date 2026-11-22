@@ -28,6 +28,10 @@ All notable changes to `q2-periodontitis` are documented in this file.
   imports); help text and behavior unchanged. The validation scripts
   also pass flake8 (output unchanged), and CI now runs flake8 on
   `q2_periodontitis/` and `validation/`.
+- `validation/search/screen_table.py` runs from the repository: it reads the
+  dated search files next to it, including the amplicon run summary now
+  committed as `amplicon_runs_2026-10-22.tsv`, and reproduces
+  `screening_2026-10-22.tsv` exactly.
 
 ## [Unreleased] — documentation and CI
 

@@ -1,8 +1,27 @@
+"""Builds the cohort screening table from the search of 2026-10-22.
+
+    python screen_table.py > screening_2026-10-22.tsv
+
+Inputs (next to this script): the ENA study list, the NCBI BioProject list
+and the amplicon run summary of each project with at least 20 amplicon
+runs. The inclusion and exclusion decisions are recorded below.
+"""
 import csv
+import os
 import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+def rows(name):
+    with open(os.path.join(HERE, name)) as fh:
+        return list(csv.reader(fh, delimiter='\t'))
+
+
 t = {}
-for f, k, v in [('ena_studies.tsv', 0, 2), ('ncbi_projects.tsv', 0, 1)]:
-    for r in csv.reader(open(f), delimiter='\t'):
+for f, k, v in [('ena_studies_2026-10-22.tsv', 0, 2),
+                ('ncbi_bioprojects_2026-10-22.tsv', 0, 1)]:
+    for r in rows(f):
         if len(r) > v:
             t.setdefault(r[k], r[v])
 INC = "included"
@@ -84,7 +103,7 @@ for k, v in EX.items():
 w = csv.writer(sys.stdout, delimiter='\t', lineterminator='\n')
 w.writerow(["accession", "runs", "library_strategy", "platform", "fastq_gb",
             "title", "decision", "reason"])
-for r in csv.reader(open('amplicon.tsv'), delimiter='\t'):
+for r in rows('amplicon_runs_2026-10-22.tsv')[1:]:
     dec = D.get(r[0], ("excluded", "UNCLASSIFIED"))
     w.writerow([r[0], r[1], r[2].strip(), r[3].strip(','), r[4],
                 t.get(r[0], ''), *dec])
