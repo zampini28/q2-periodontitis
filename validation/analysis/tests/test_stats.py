@@ -86,6 +86,31 @@ class TestMeta(unittest.TestCase):
         self.assertAlmostEqual(res["estimate"], 0.8)
 
 
+class TestMetaAuc(unittest.TestCase):
+
+    def test_logit_pooling_is_back_transformed(self):
+        a = np.array([0.90, 0.95, 0.99, 0.92])
+        se = np.array([0.04, 0.02, 0.01, 0.03])
+        res = st.random_effects_auc(a, se)
+        y = np.log(a / (1 - a))
+        ref = st.random_effects(y, (se / (a * (1 - a))) ** 2)
+        inv = lambda x: 1 / (1 + np.exp(-x))  # noqa: E731
+        self.assertAlmostEqual(res["estimate"], inv(ref["estimate"]))
+        self.assertAlmostEqual(res["pi_high"], inv(ref["pi_high"]))
+        self.assertAlmostEqual(res["tau2"], ref["tau2"])
+        for key in ("ci_low", "ci_high", "pi_low", "pi_high"):
+            self.assertTrue(0 < res[key] < 1)
+
+    def test_identical_aucs_pool_to_themselves(self):
+        res = st.random_effects_auc([0.8, 0.8, 0.8], [0.05, 0.04, 0.05])
+        self.assertAlmostEqual(res["estimate"], 0.8)
+        self.assertEqual(res["tau2"], 0.0)
+
+    def test_auc_of_one_raises(self):
+        with self.assertRaises(ValueError):
+            st.random_effects_auc([1.0, 0.9, 0.9], [0.01, 0.05, 0.05])
+
+
 class TestProportions(unittest.TestCase):
 
     def test_wilson(self):

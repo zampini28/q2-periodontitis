@@ -107,15 +107,15 @@ for set_name, mask in SETS.items():
         for label, se_col, method, hk, gg in variants:
             if len(gg) < 3:   # plan, section 8: no pooled estimate
                 continue
-            res = st.random_effects(gg["auc"], gg[se_col] ** 2, method, hk)
+            res = st.random_effects_auc(gg["auc"], gg[se_col], method, hk)
             meta_rows.append({"set": set_name, "classifier": clf,
                               "measure": m, "analysis": label,
                               "cohorts": ";".join(gg["cohort"]), **res})
         if set_name == "independent" and m == PRIMARY and len(g) >= 4:
             for left in g["cohort"]:
                 gg = g[g["cohort"] != left]
-                res = st.random_effects(gg["auc"],
-                                        gg["se_hanley_mcneil"] ** 2)
+                res = st.random_effects_auc(gg["auc"],
+                                            gg["se_hanley_mcneil"])
                 loo_rows.append({"classifier": clf, "left_out": left, **res})
 save(pd.DataFrame(meta_rows), "meta_auc.tsv")
 save(pd.DataFrame(loo_rows), "meta_auc_loo.tsv")

@@ -149,6 +149,32 @@ def random_effects(y, v, method="REML", hksj=True):
             "method": method + ("+HKSJ" if hksj else "")}
 
 
+def _inv_logit(x):
+    return 1 / (1 + np.exp(-np.asarray(x, float)))
+
+
+def random_effects_auc(auc, se, method="REML", hksj=True):
+    """Random-effects pooled AUC on the logit scale.
+
+    Each AUC enters as logit(AUC) with the delta-method variance
+    se**2 / (AUC (1 - AUC))**2. The estimate, CI and prediction interval
+    are back-transformed, so they stay inside (0, 1); tau2, I2 and Q refer
+    to the logit scale. AUCs of exactly 0 or 1 have no logit and raise.
+    """
+    a, se = np.asarray(auc, float), np.asarray(se, float)
+    if np.any((a <= 0) | (a >= 1)):
+        raise ValueError("AUC must be strictly between 0 and 1 for logit "
+                         "pooling")
+    y = np.log(a / (1 - a))
+    v = (se / (a * (1 - a))) ** 2
+    res = random_effects(y, v, method, hksj)
+    for key in ("estimate", "ci_low", "ci_high", "pi_low", "pi_high"):
+        res[key] = float(_inv_logit(res[key]))
+    res["se"] = np.nan   # an SE on the logit scale is not an AUC SE
+    res["scale"] = "logit"
+    return res
+
+
 # ------------------------------------------------------- proportions
 
 def wilson(k, n, z=1.959963984540054):

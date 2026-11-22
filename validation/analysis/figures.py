@@ -74,8 +74,8 @@ def label(cohort):
 disc = read("discrimination.tsv")
 meta = read("meta_auc.tsv")
 clf = PRIMARY_CLASSIFIER
-# Pooled CIs and prediction intervals come from a normal approximation and
-# can pass AUC = 1; the axis cuts them at XMAX and an arrowhead marks the cut
+# Pooled CIs and prediction intervals are back-transformed from the logit
+# scale and stay below AUC = 1; the arrowhead at XMAX is kept as a guard
 XMAX = 1.05
 
 

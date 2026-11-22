@@ -4,6 +4,13 @@ All notable changes to `q2-periodontitis` are documented in this file.
 
 ## [Unreleased] — reproducibility
 
+- Pool cohort AUCs on the logit scale (delta-method variance,
+  back-transformed estimate, CI and prediction interval;
+  `stats.random_effects_auc`). On the AUC scale the prediction interval of
+  the SMDI reached 1.02 and that of the Green complex −0.05. Pooled SMDI
+  AUC 0.93 (0.89–0.95), prediction interval 0.89–0.95, I² = 0%, instead of
+  0.94 (0.91–0.98), 0.86–1.02, I² = 52%. Recorded as a deviation in
+  `docs/VALIDATION.md`.
 - Add `validation/reproduce.sh`: one command from a fresh clone installs
   micromamba, the QIIME 2 2024.10 and R microbiome 1.6.0 environments,
   runs the tests and the full validation.
@@ -15,7 +22,7 @@ All notable changes to `q2-periodontitis` are documented in this file.
   (section 5), and the disk, environment and cluster requirements in
   `validation/README.md`.
 - Report the multi-cohort validation of 16 cohorts in `docs/VALIDATION.md`
-  (pooled SMDI AUC 0.94 in six independent cohorts), with a Deviations
+  (pooled SMDI AUC 0.93 in six independent cohorts), with a Deviations
   section, and commit its results and provenance in `validation/results/`.
 - Fix the peak memory of the plugin-vs-R benchmark: each process now reports
   its own peak RSS (VmHWM). `ru_maxrss` from `os.wait4` included the

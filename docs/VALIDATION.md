@@ -60,7 +60,9 @@ reads assigned to a complex. The per-cohort QC table is
 
 Subjects are the unit of analysis. AUC is P(periodontitis > health), with
 95% CIs from a stratified bootstrap over subjects; pooling is by
-random-effects meta-analysis (REML with Hartung–Knapp–Sidik–Jonkman CI).
+random-effects meta-analysis of logit(AUC) (REML with
+Hartung–Knapp–Sidik–Jonkman CI), back-transformed to the AUC scale (see
+[Deviations](#deviations)).
 
 | Cohort | Region | Health / periodontitis | SMDI | Red complex |
 |---|---|---|---|---|
@@ -70,38 +72,38 @@ random-effects meta-analysis (REML with Hartung–Knapp–Sidik–Jonkman CI).
 | PRJNA1470369 | V3–V4 | 32 / 116 | 0.91 (0.85–0.95) | 0.87 (0.81–0.93) |
 | PRJNA773202 | V3–V4 | 53 / 65 | 0.95 (0.91–0.99) | 0.93 (0.87–0.97) |
 | PRJNA726254 | V4 | 13 / 15 | 0.99 (0.96–1.00) | 0.93 (0.78–1.00) |
-| **Pooled, independent (k = 6)** | | 183 / 372 | **0.94 (0.91–0.98)** | 0.91 (0.88–0.94) |
-| Pooled, derivation/test (k = 3) | V1–V3, V1–V2, V3–V4 | 82 / 84 | 0.92 (0.81–1.04) | 0.91 (0.86–0.96) |
+| **Pooled, independent (k = 6)** | | 183 / 372 | **0.93 (0.89–0.95)** | 0.90 (0.86–0.93) |
+| Pooled, derivation/test (k = 3) | V1–V3, V1–V2, V3–V4 | 82 / 84 | 0.91 (0.66–0.98) | 0.91 (0.83–0.95) |
 
 Pooled AUC over the six independent cohorts (naive Bayes):
 
 | Measure | Pooled AUC (95% CI) | 95% prediction interval | I² |
 |---|---|---|---|
-| **SMDI** | **0.94 (0.91–0.98)** | 0.86–1.02 | 52% |
-| SMDI_simplified | 0.92 (0.89–0.94) | 0.89–0.94 | 0% |
-| PC2014_moderate | 0.90 (0.86–0.94) | 0.82–0.98 | 31% |
-| Red complex | 0.91 (0.88–0.94) | 0.88–0.94 | 0% |
-| Orange complex | 0.72 (0.62–0.81) | 0.49–0.94 | 68% |
-| Purple complex | 0.36 (0.25–0.47) | 0.10–0.62 | 62% |
-| Green complex | 0.27 (0.14–0.40) | −0.05–0.58 | 77% |
-| Yellow complex | 0.19 (0.11–0.26) | 0.02–0.35 | 51% |
-| Blue complex | 0.18 (0.13–0.24) | 0.12–0.24 | 7% |
+| **SMDI** | **0.93 (0.89–0.95)** | 0.89–0.95 | 0% |
+| SMDI_simplified | 0.91 (0.88–0.93) | 0.87–0.93 | 0% |
+| PC2014_moderate | 0.89 (0.84–0.92) | 0.79–0.94 | 24% |
+| Red complex | 0.90 (0.86–0.93) | 0.86–0.93 | 0% |
+| Orange complex | 0.71 (0.61–0.80) | 0.46–0.88 | 58% |
+| Purple complex | 0.37 (0.27–0.48) | 0.17–0.62 | 56% |
+| Green complex | 0.27 (0.15–0.42) | 0.06–0.67 | 74% |
+| Yellow complex | 0.19 (0.13–0.28) | 0.08–0.42 | 47% |
+| Blue complex | 0.20 (0.14–0.27) | 0.12–0.31 | 21% |
 
-Prediction limits outside 0–1 come from the normal approximation on the
-AUC scale. The complexes behave as the Socransky model predicts: Red and
+I² and the prediction interval refer to the logit scale. The complexes behave as the Socransky model predicts: Red and
 Orange were higher in periodontitis and Yellow, Green, Blue and Purple
 lower in all six cohorts.
 
-Leaving out any one cohort kept the pooled SMDI AUC at 0.93–0.95. The
-DerSimonian–Laird estimate (0.94, 0.91–0.97), bootstrap standard errors
-(0.94, 0.91–0.98) and the VSEARCH classifier (0.93, 0.91–0.96; I² = 13%)
-gave the same answer.
+Leaving out any one cohort kept the pooled SMDI AUC at 0.92–0.93. The
+DerSimonian–Laird estimate (0.93, 0.90–0.94), bootstrap standard errors
+(0.93, 0.89–0.95; I² = 14%) and the VSEARCH classifier (0.92, 0.89–0.95;
+I² = 0%) gave the same answer.
 
 PRJNA1294584 was first analysed as a seventh case-control cohort. Its
 published description shows that its 30 controls all have gingivitis
 (see [Deviations](#deviations)); with them counted as health, the SMDI
-AUC was 0.65 (0.53–0.77) and the pooled AUC of seven cohorts 0.90
-(0.81–1.00), I² = 83%. The run before the correction is kept in the git
+AUC was 0.65 (0.53–0.77) and the pooled AUC of seven cohorts 0.91
+(0.80–0.96), I² = 86% (logit scale; 0.90, 0.81–1.00, I² = 83% on the AUC
+scale used at the time). The run before the correction is kept in the git
 history of `validation/results/`.
 
 ![Forest plot](../validation/results/figures/fig1_forest.png)
@@ -202,7 +204,8 @@ Changes from [ANALYSIS_PLAN.md](ANALYSIS_PLAN.md) (version 1.0,
 | One file of PRJNA863881 (SRR20721137, reverse reads) taken from NCBI SRA instead of ENA | ENA served an empty directory in place of the file on 2026-11-21. The SRA forward reads were identical to ENA's. | None expected: same reads; one of 124 subjects. |
 | Synthetic performance benchmark (2026-11-03), simulation with known truth (2026-11-04), cross-check and benchmark against R microbiome 1.6.0 (2026-11-21) added | Software validation requested for publication. | None: additional analyses, not part of Q1–Q6. |
 | `run_analysis.py` skips, with a warning, a therapy follow-up whose time label is missing (2026-11-21) | One missing label would otherwise stop the analysis of every cohort. | None: no follow-up was skipped in the reported run. |
-| PRJNA1294584 removed from the case-control analyses (Q1–Q3, robustness) and its controls relabelled gingivitis (2026-11-22) | Found after the results were known. The BioSample label "control" was mapped to health, but the published description of the cohort (Sawangpanyangkura et al. 2026, *J Clin Periodontol* 53:1332) shows that all 30 controls have gingivitis (bleeding on probing > 10% in every participant) and that the study has no healthy group. The plan excludes gingivitis from the primary contrast and from the stage correlation, so the cohort has no eligible controls; it now enters only the stage correlation (stages II–IV). | Pooled SMDI AUC 0.94 (0.91–0.98), I² = 52%, in six cohorts, instead of 0.90 (0.81–1.00), I² = 83%, in seven; cut-off sensitivity and specificity, Q2 and the PRJNA1294584 stage correlation changed as reported above. |
+| PRJNA1294584 removed from the case-control analyses (Q1–Q3, robustness) and its controls relabelled gingivitis (2026-11-22) | Found after the results were known. The BioSample label "control" was mapped to health, but the published description of the cohort (Sawangpanyangkura et al. 2026, *J Clin Periodontol* 53:1332) shows that all 30 controls have gingivitis (bleeding on probing > 10% in every participant) and that the study has no healthy group. The plan excludes gingivitis from the primary contrast and from the stage correlation, so the cohort has no eligible controls; it now enters only the stage correlation (stages II–IV). | Pooled SMDI AUC 0.94 (0.91–0.98), I² = 52%, in six cohorts, instead of 0.90 (0.81–1.00), I² = 83%, in seven (AUC scale, before the change below); cut-off sensitivity and specificity, Q2 and the PRJNA1294584 stage correlation changed as reported above. |
+| AUCs pooled on the logit scale instead of the AUC scale (2026-11-22) | Found after the results were known. On the AUC scale, the normal approximation gave prediction limits outside 0–1 (SMDI 0.86–1.02; Green complex −0.05–0.58), and the Hanley–McNeil SE shrinks as the AUC approaches 1, which gave PRJNA726254 (28 subjects, AUC 0.99) the same weight as the 118-subject PRJNA773202 (24%); leaving it out gave 0.93 (0.90–0.96), I² = 0%, so it alone produced the apparent heterogeneity. On the logit scale its delta-method variance is large and its weight falls to about 1%, probably too little; the pooled AUC is 0.93 either way. Each AUC now enters as logit(AUC) with the delta-method variance SE²/[AUC(1 − AUC)]², with the same SEs, τ² estimators and HKSJ CI; estimate, CI and prediction interval are back-transformed (`stats.random_effects_auc`). | Pooled SMDI AUC 0.93 (0.89–0.95), prediction interval 0.89–0.95, I² = 0%, instead of 0.94 (0.91–0.98), 0.86–1.02, I² = 52%. Pooled estimates of the other measures moved by ≤ 0.015 and all intervals now lie in 0–1 (Q1 tables above). Per-cohort AUCs, Q2 (DeLong differences), Q3–Q6 and robustness are unchanged. |
 
 The PRJNA773195 fallback written in its configuration (forward reads only
 if DADA2 kept less than 10% of reads) was not triggered: DADA2 kept a
@@ -423,11 +426,11 @@ software and assignment test, not a biological validation; the figure is
 ## Conclusions and limits
 
 * **The 49-species SMDI is the best-performing and best-supported index.**
-  In six independent cohorts it reached a pooled AUC of 0.94
-  (0.91–0.98), and it is numerically identical to the R implementation
+  In six independent cohorts it reached a pooled AUC of 0.93
+  (0.89–0.95), and it is numerically identical to the R implementation
   that defined it. Use it as the primary measure.
 * Its advantage over the Red complex is consistent but small (0.023 AUC).
-  SMDI_simplified (0.92) and PC2014_moderate (0.90) discriminate slightly
+  SMDI_simplified (0.91) and PC2014_moderate (0.89) discriminate slightly
   less well; SMDI_simplified needs only genus names, which makes it the
   fallback when species resolution is poor.
 * The SMDI ranks subjects robustly across classifiers, regions,
@@ -437,8 +440,9 @@ software and assignment test, not a biological validation; the figure is
   cohorts. Re-estimate cut-offs for each region and population.
 * The SMDI fell after non-surgical therapy in every independent therapy
   cohort, but baseline values did not predict non-response.
-* Heterogeneity was moderate (I² = 52%). The prediction interval (0.86
-  to above 1) is the realistic range for a new population. All six
+* The six cohorts were consistent (I² = 0% on the logit scale), and the
+  prediction interval for a new population was 0.89–0.95. Six cohorts
+  give little power to detect heterogeneity, so this range is optimistic. All six
   cohorts compared health with periodontitis. In the one cohort that
   compared gingivitis with periodontitis (PRJNA1294584) the AUC was 0.65,
   so the SMDI should not be expected to separate gingivitis from
