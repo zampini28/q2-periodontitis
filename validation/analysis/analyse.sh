@@ -18,6 +18,8 @@ run "$HERE/simulation.py" "$RESULTS"
 RSCRIPT=$(micromamba run -n "$R_ENV" which Rscript)
 rcheck=0
 run "$HERE/rcheck.py" "$DATA" "$RESULTS" --rscript "$RSCRIPT" || rcheck=$?
+run "$HERE/parser_check.py" "$DATA/references" "$RESULTS" \
+  --rscript "$RSCRIPT" || rcheck=$?
 run "$HERE/figures.py" "$RESULTS"
 run "$HERE/report.py" "$RESULTS"
 exit "$rcheck"

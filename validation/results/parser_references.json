@@ -1,0 +1,30 @@
+[
+  {
+    "database": "eHOMD V15.23",
+    "url": "https://www.homd.org/ftp/16S_rRNA_refseq/HOMD_16S_rRNA_RefSeq/V15.23/HOMD_16S_rRNA_RefSeq_V15.23.qiime.taxonomy",
+    "sha256": "e9f2dd61e81259bb5d6bda901693b41c2c85605b1c20c70e4fd263c8b5c0c4f0",
+    "records": 1015,
+    "distinct_labels": 781
+  },
+  {
+    "database": "SILVA 138 (99%)",
+    "url": "https://data.qiime2.org/2024.10/common/silva-138-99-tax.qza",
+    "sha256": "9acb24ea641df63b2a519de81a5d720bb686a948d3188e80bcc047c032503379",
+    "records": 436680,
+    "distinct_labels": 73822
+  },
+  {
+    "database": "GTDB R226 (bac120)",
+    "url": "https://data.gtdb.ecogenomic.org/releases/release226/226.0/bac120_taxonomy_r226.tsv.gz",
+    "sha256": "a54d30b1deb505e813cb754f4298a225687df3cd882675cad7b53796d1429ebc",
+    "records": 715230,
+    "distinct_labels": 136646
+  },
+  {
+    "database": "Greengenes2 2022.10 (backbone)",
+    "url": "http://ftp.microbio.me/greengenes_release/2022.10/2022.10.backbone.tax.qza",
+    "sha256": "6495d6da4097ff51391ae7ce8df09c0ee00807c8bb64e4ce8cae1c9d5e07f5f0",
+    "records": 331269,
+    "distinct_labels": 28024
+  }
+]

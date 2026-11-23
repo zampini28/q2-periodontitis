@@ -4,6 +4,21 @@ All notable changes to `q2-periodontitis` are documented in this file.
 
 ## [Unreleased] — reproducibility
 
+- Map two GTDB species names to the names of the plugin's references
+  (`synonyms_map.tsv`): *Reyranella aerosaccus* → *Enhydrobacter
+  aerosaccus* (SMDI, normobiotic) and *Pauljensenia odontolytica* →
+  *Schaalia odontolytica* (Purple complex). Both GTDB names are absent from
+  LPSN; their GTDB species clusters contain the type strains of the LPSN
+  names (ATCC 27094; NCTC 9935 and LMG 18080). Before, GTDB-classified
+  reads of these species were not counted: *E. aerosaccus* entered the
+  SMDI as absent and *S. odontolytica* went to `Other`. Results from eHOMD
+  or SILVA taxonomies do not change.
+- Cross-check the plugin's taxonomy parsing against an independent R
+  parser (`smdi_microbiome.R`) in `rcheck.py`, which now also compares a
+  custom signature, a confidence threshold and a fixed pseudocount; add
+  `parser_check.py`, which compares both parsers on every label of
+  eHOMD V15.23, SILVA 138, GTDB R226 and Greengenes2 2022.10
+  (`parser_crosscheck.tsv`, `parser_unreachable.tsv`).
 - Pool cohort AUCs on the logit scale (delta-method variance,
   back-transformed estimate, CI and prediction interval;
   `stats.random_effects_auc`). On the AUC scale the prediction interval of

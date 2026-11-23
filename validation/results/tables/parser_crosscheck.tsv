@@ -1,0 +1,9 @@
+database	level	labels	resolved	units	mismatch	pass	signature_reached
+eHOMD V15.23	species	2449	1562	775	0	True	SMDI 49/49; SMDI_custom 11/11
+eHOMD V15.23	genus	2449	2032	226	0	True	SMDI_simplified 3/3
+SILVA 138 (99%)	species	175316	107822	48028	0	True	SMDI 32/49; SMDI_custom 9/11
+SILVA 138 (99%)	genus	175316	156154	7434	0	True	SMDI_simplified 3/3
+GTDB R226 (bac120)	species	344100	273292	132775	0	True	SMDI 30/49; SMDI_custom 9/11
+GTDB R226 (bac120)	genus	344100	327944	26514	0	True	SMDI_simplified 3/3
+Greengenes2 2022.10 (backbone)	species	82251	45858	22437	0	True	SMDI 30/49; SMDI_custom 9/11
+Greengenes2 2022.10 (backbone)	genus	82251	70256	6542	0	True	SMDI_simplified 3/3

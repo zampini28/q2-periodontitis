@@ -2,14 +2,22 @@
 
     python -I rcheck.py <data_dir> <results_dir> --rscript <Rscript> [--quick]
 
-Cross-check: the SMDI and SMDI_simplified of collapse_complexes (default
-parameters) are compared, sample by sample, with smdi_microbiome.R, which
+Cross-check: the SMDI, SMDI_simplified and SMDI_custom of
+collapse_complexes are compared, sample by sample, with smdi_microbiome.R, which
 applies microbiome::transform(x, "clr") of microbiome 1.6.0, the
 implementation used to define the index. Both get the same counts, raw
 taxonomy strings, synonyms and signature files; smdi_microbiome.R parses the
 taxonomy itself, so the check covers taxonomy parsing, aggregation,
 pseudocount, CLR and index. The feature -> taxon units of both sides are
 also compared feature by feature (unit_mismatch).
+SMDI_custom uses custom_signature.tsv, a test signature (not a biological
+one) written with historical names (Bacteroides forsythus, Streptococcus
+sanguis, ...) and another HMT spelling ("oral taxon 360"). Each table is
+checked with the default parameters, with min_confidence = 0.7 and with a
+fixed smdi_pseudocount of 1e-5 (SETTINGS). Taxonomies without a Confidence
+column (simulated, synthetic and VSEARCH tables) get confidences drawn from
+U(0.5, 1) with a fixed seed, so the exclusion rule is exercised; the
+excluded column counts the features it excluded.
 Tables checked: the simulated communities (simulation.py), the synthetic
 benchmark tables (performance.py) and every processed cohort and classifier
 in <data_dir>.
@@ -49,6 +57,7 @@ from common import CLASSIFIERS, load_cohorts  # noqa: E402
 from q2_periodontitis._methods import (  # noqa: E402
     SMDI_SIMPLIFIED,
     SMDI_SPECIES,
+    _confidence_series,
     SYNONYMS,
     _taxon_series,
     collapse_complexes,
@@ -59,16 +68,40 @@ from q2_periodontitis._methods import (  # noqa: E402
 )
 
 R_SCRIPT = os.path.join(HERE, "smdi_microbiome.R")
-INDICES = {"SMDI": SMDI_SPECIES, "SMDI_simplified": SMDI_SIMPLIFIED}
+CUSTOM_SIGNATURE = os.path.join(HERE, "custom_signature.tsv")
+INDICES = {"SMDI": SMDI_SPECIES, "SMDI_simplified": SMDI_SIMPLIFIED,
+           "SMDI_custom": CUSTOM_SIGNATURE}
+# collapse_complexes parameters -> smdi_microbiome.R options
+SETTINGS = [("default", {}),
+            ("min_confidence=0.7", {"min_confidence": 0.7}),
+            ("smdi_pseudocount=1e-05", {"smdi_pseudocount": 1e-5})]
+R_OPTIONS = {"min_confidence": "--min-confidence=%r",
+             "smdi_pseudocount": "--pseudocount=%r"}
+CONFIDENCE_SEED = 20261122
 TOLERANCE = 1e-9
 REPEATS = performance.REPEATS
 
 
 def write_taxonomy(taxonomy, path):
-    """Feature id -> raw taxonomy string, as smdi_microbiome.R reads it."""
+    """Feature id -> raw taxonomy string (and Confidence, when present), as
+    smdi_microbiome.R reads it."""
     taxa = _taxon_series(taxonomy)
-    pd.DataFrame({"feature": taxa.index.astype(str),
-                  "Taxon": taxa.values}).to_csv(path, sep="\t", index=False)
+    out = pd.DataFrame({"feature": taxa.index.astype(str),
+                        "Taxon": taxa.values})
+    if isinstance(taxonomy, pd.DataFrame) and "Confidence" in taxonomy:
+        out["Confidence"] = taxonomy["Confidence"].values
+    out.to_csv(path, sep="\t", index=False)
+
+
+def with_confidence(taxonomy):
+    """The taxonomy with a Confidence column: its own, or U(0.5, 1) values
+    drawn with a fixed seed when it has none."""
+    if _confidence_series(taxonomy) is not None:
+        return taxonomy
+    taxonomy = taxonomy.copy()
+    rng = np.random.default_rng(CONFIDENCE_SEED)
+    taxonomy["Confidence"] = rng.uniform(0.5, 1.0, len(taxonomy))
+    return taxonomy
 
 
 def write_inputs(table, taxonomy, index, workdir):
@@ -84,15 +117,17 @@ def write_inputs(table, taxonomy, index, workdir):
     return paths + [SYNONYMS, INDICES[index]]
 
 
-def run_r(rscript, table, taxonomy, index):
+def run_r(rscript, table, taxonomy, index, params=None):
     """SMDI from R (Series), R's units (Series by feature), R's compute
-    seconds and the peak RSS in MB."""
+    seconds and the peak RSS in MB. `params` are collapse_complexes
+    parameters (SETTINGS), passed as the matching R options."""
+    options = [R_OPTIONS[k] % v for k, v in (params or {}).items()]
     with tempfile.TemporaryDirectory() as workdir:
         inputs = write_inputs(table, taxonomy, index, workdir)
         out = os.path.join(workdir, "smdi.tsv")
         units_out = os.path.join(workdir, "units.tsv")
-        seconds, peak = timing(
-            run_child([rscript, R_SCRIPT] + inputs + [out, units_out]))
+        seconds, peak = timing(run_child(
+            [rscript, R_SCRIPT] + inputs + [out, units_out] + options))
         smdi = pd.read_csv(out, sep="\t", index_col=0)["SMDI"]
         units = read_units(units_out)
     smdi.index = smdi.index.astype(str)
@@ -106,10 +141,12 @@ def read_units(path):
     return pd.Series(units["unit"].values, index=units["feature"].values)
 
 
-def unit_mismatches(table, taxonomy, index, synonyms, r_units):
-    """Features whose unit (taxon key) differs between plugin and R."""
+def unit_mismatches(table, taxonomy, index, synonyms, r_units, exclude):
+    """Features whose unit (taxon key) differs between plugin and R;
+    `exclude` are the plugin's low-confidence features."""
     level = load_signature(INDICES[index])["level"].iloc[0].strip().lower()
-    plugin = pd.Series(feature_units(table, taxonomy, synonyms, level),
+    plugin = pd.Series(feature_units(table, taxonomy, synonyms, level,
+                                     exclude),
                        index=list(table.ids(axis="observation")))
     return int((plugin != r_units.reindex(plugin.index)).sum())
 
@@ -164,18 +201,28 @@ def compare(plugin, r, unit_mismatch=0):
 
 
 def check_table(rscript, source, classifier, table, taxonomy, synonyms):
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", UserWarning)
-        _, indices, _ = collapse_complexes(table, taxonomy)
+    taxonomy = with_confidence(taxonomy)
+    custom = load_signature(CUSTOM_SIGNATURE)
     rows = []
-    for index in INDICES:
-        r_smdi, r_units, _, _ = run_r(rscript, table, taxonomy, index)
-        mismatch = unit_mismatches(table, taxonomy, index, synonyms, r_units)
-        rows.append({"source": source, "classifier": classifier,
-                     "index": index, "features": table.shape[0],
-                     **compare(indices[index], r_smdi, mismatch)})
-        print(source, classifier, index, rows[-1]["max_abs_diff"],
-              flush=True)
+    for setting, params in SETTINGS:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            _, indices, mapping = collapse_complexes(
+                table, taxonomy, smdi_signature=custom, **params)
+        exclude = set(mapping.index[mapping["Resolution"]
+                                    == "low-confidence"])
+        for index in INDICES:
+            r_smdi, r_units, _, _ = run_r(rscript, table, taxonomy, index,
+                                          params)
+            mismatch = unit_mismatches(table, taxonomy, index, synonyms,
+                                       r_units, exclude)
+            rows.append({"source": source, "classifier": classifier,
+                         "setting": setting, "index": index,
+                         "features": table.shape[0],
+                         "excluded": len(exclude),
+                         **compare(indices[index], r_smdi, mismatch)})
+            print(source, classifier, setting, index,
+                  rows[-1]["max_abs_diff"], flush=True)
     return rows
 
 

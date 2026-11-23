@@ -266,6 +266,21 @@ class TestReference(TestPluginBase):
             self.assign("g__Peptostreptococcaceae_[G-6]; "
                         "s__[Eubacterium]_nodatum"),
             ("Orange", "species"))
+        # GTDB names the S. odontolytica type strains Pauljensenia
+        # odontolytica (cluster suffixes _B, _C, ... are dropped)
+        for label in ("g__Pauljensenia; s__Pauljensenia odontolytica",
+                      "g__Pauljensenia; s__Pauljensenia odontolytica_C"):
+            self.assertEqual(self.assign(label), ("Purple", "species"),
+                             label)
+
+    def test_gtdb_names_resolve_to_smdi_taxa(self):
+        # GTDB names the E. aerosaccus type strain Reyranella aerosaccus
+        for label in ("g__Reyranella; s__Reyranella aerosaccus",
+                      "g__Reyranella; s__Reyranella aerosaccus_B"):
+            self.assertEqual(
+                parse_taxonomy_string("d__Bacteria; " + label,
+                                      self.synonyms)[1],
+                "Enhydrobacter aerosaccus", label)
 
     def test_ambiguous_labels(self):
         self.assertEqual(

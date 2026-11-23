@@ -81,11 +81,20 @@ the analyses it enters.
 - `analysis/performance.py` measures runtime and peak memory on synthetic
   sparse tables.
 - `analysis/simulation.py` runs the simulated known-truth validation.
-- `analysis/rcheck.py` cross-checks the SMDI of the plugin against
+- `analysis/rcheck.py` cross-checks the SMDI, SMDI_simplified and a test
+  signature (`analysis/custom_signature.tsv`) of the plugin against
   `analysis/smdi_microbiome.R` (R microbiome 1.6.0, the implementation used
-  to define the index) on the simulated, synthetic and cohort tables, and
-  benchmarks the two implementations (`r_crosscheck.tsv`,
-  `r_benchmark.tsv`, `fig7_r_benchmark`).
+  to define the index, with its own taxonomy parser) on the simulated,
+  synthetic and cohort tables, with default parameters, a confidence
+  threshold and a fixed pseudocount, and benchmarks the two
+  implementations (`r_crosscheck.tsv`, `r_benchmark.tsv`,
+  `fig7_r_benchmark`).
+- `analysis/parser_check.py` downloads the eHOMD, SILVA, GTDB and
+  Greengenes2 taxonomies into `<data_dir>/references`, compares the
+  plugin's and R's taxonomy parsing on every label and rank truncation,
+  and lists the index taxa each database cannot reach
+  (`parser_crosscheck.tsv`, `parser_unreachable.tsv`,
+  `parser_references.json`).
 - `analysis/figures.py` writes `figures/`.
 - `analysis/report.py` writes `REPORT.md`.
 
