@@ -5,16 +5,18 @@
 Cross-check: the SMDI and SMDI_simplified of collapse_complexes (default
 parameters) are compared, sample by sample, with smdi_microbiome.R, which
 applies microbiome::transform(x, "clr") of microbiome 1.6.0, the
-implementation used to define the index. Both get the same counts and the
-same feature -> taxon grouping (feature_units), so the check covers the
-aggregation, pseudocount, CLR and index; taxonomy parsing is the plugin's.
+implementation used to define the index. Both get the same counts, raw
+taxonomy strings, synonyms and signature files; smdi_microbiome.R parses the
+taxonomy itself, so the check covers taxonomy parsing, aggregation,
+pseudocount, CLR and index. The feature -> taxon units of both sides are
+also compared feature by feature (unit_mismatch).
 Tables checked: the simulated communities (simulation.py), the synthetic
 benchmark tables (performance.py) and every processed cohort and classifier
 in <data_dir>.
 
 Benchmark: on the synthetic tables of performance.py, the 49-species SMDI
 computed by the plugin (compute_smdi, including taxonomy parsing) and by
-smdi_microbiome.R (taxon grouping given). Each run is a separate process;
+smdi_microbiome.R (taxonomy parsing not timed). Each run is a separate process;
 runtime is measured inside the process from loaded tables to index, and peak
 RSS is that of the whole process, read by the process itself from VmHWM in
 /proc/self/status (Linux). os.wait4 is not used for memory: its ru_maxrss
@@ -47,13 +49,13 @@ from common import CLASSIFIERS, load_cohorts  # noqa: E402
 from q2_periodontitis._methods import (  # noqa: E402
     SMDI_SIMPLIFIED,
     SMDI_SPECIES,
-    _canonical,
+    SYNONYMS,
+    _taxon_series,
     collapse_complexes,
     compute_smdi,
     feature_units,
     load_signature,
     load_synonyms,
-    taxon_key,
 )
 
 R_SCRIPT = os.path.join(HERE, "smdi_microbiome.R")
@@ -62,44 +64,54 @@ TOLERANCE = 1e-9
 REPEATS = performance.REPEATS
 
 
-def signature_units(path, synonyms):
-    """Signature taxa as the unit keys of feature_units, with direction."""
-    sig = load_signature(path)
-    level = sig["level"].iloc[0]
-    if level == "species":
-        keys = [taxon_key(_canonical(t, synonyms)) for t in sig["taxon"]]
-    else:
-        keys = [_canonical(t, synonyms).lower() for t in sig["taxon"]]
-    return level, pd.DataFrame({"unit": keys, "direction": sig["direction"]})
+def write_taxonomy(taxonomy, path):
+    """Feature id -> raw taxonomy string, as smdi_microbiome.R reads it."""
+    taxa = _taxon_series(taxonomy)
+    pd.DataFrame({"feature": taxa.index.astype(str),
+                  "Taxon": taxa.values}).to_csv(path, sep="\t", index=False)
 
 
-def write_inputs(table, taxonomy, index, synonyms, workdir):
-    """Writes the three input files of smdi_microbiome.R."""
-    level, sig = signature_units(INDICES[index], synonyms)
-    units = feature_units(table, taxonomy, synonyms, level)
-    paths = [os.path.join(workdir, n)
-             for n in ("counts.tsv", "units.tsv", "signature.tsv")]
+def write_inputs(table, taxonomy, index, workdir):
+    """Input files of smdi_microbiome.R: counts, raw taxonomy, synonyms and
+    signature (the last two are the plugin's data files, unchanged)."""
+    paths = [os.path.join(workdir, n) for n in ("counts.tsv", "taxonomy.tsv")]
     counts = pd.DataFrame(table.matrix_data.toarray(),
                           index=pd.Index(table.ids(axis="observation"),
                                          name="feature"),
                           columns=table.ids(axis="sample"))
     counts.to_csv(paths[0], sep="\t")
-    pd.DataFrame({"feature": counts.index, "unit": units}).to_csv(
-        paths[1], sep="\t", index=False)
-    sig.to_csv(paths[2], sep="\t", index=False)
-    return paths
+    write_taxonomy(taxonomy, paths[1])
+    return paths + [SYNONYMS, INDICES[index]]
 
 
-def run_r(rscript, table, taxonomy, index, synonyms):
-    """SMDI from R (Series), R's compute seconds and the peak RSS in MB."""
+def run_r(rscript, table, taxonomy, index):
+    """SMDI from R (Series), R's units (Series by feature), R's compute
+    seconds and the peak RSS in MB."""
     with tempfile.TemporaryDirectory() as workdir:
-        inputs = write_inputs(table, taxonomy, index, synonyms, workdir)
+        inputs = write_inputs(table, taxonomy, index, workdir)
         out = os.path.join(workdir, "smdi.tsv")
+        units_out = os.path.join(workdir, "units.tsv")
         seconds, peak = timing(
-            run_child([rscript, R_SCRIPT] + inputs + [out]))
+            run_child([rscript, R_SCRIPT] + inputs + [out, units_out]))
         smdi = pd.read_csv(out, sep="\t", index_col=0)["SMDI"]
+        units = read_units(units_out)
     smdi.index = smdi.index.astype(str)
-    return smdi, seconds, peak
+    return smdi, units, seconds, peak
+
+
+def read_units(path):
+    """Feature -> unit table written by smdi_microbiome.R."""
+    units = pd.read_csv(path, sep="\t", dtype=str, keep_default_na=False,
+                        quoting=3)
+    return pd.Series(units["unit"].values, index=units["feature"].values)
+
+
+def unit_mismatches(table, taxonomy, index, synonyms, r_units):
+    """Features whose unit (taxon key) differs between plugin and R."""
+    level = load_signature(INDICES[index])["level"].iloc[0].strip().lower()
+    plugin = pd.Series(feature_units(table, taxonomy, synonyms, level),
+                       index=list(table.ids(axis="observation")))
+    return int((plugin != r_units.reindex(plugin.index)).sum())
 
 
 def timing(stdout):
@@ -135,16 +147,20 @@ def run_child(command):
         return out.read()
 
 
-def compare(plugin, r):
-    """Max absolute difference; NaN must match NaN."""
+def compare(plugin, r, unit_mismatch=0):
+    """Max absolute difference; NaN must match NaN and every feature must
+    have the same unit on both sides."""
     r = r.reindex(plugin.index)
     nan_mismatch = int((plugin.isna() != r.isna()).sum())
     both = plugin.notna() & r.notna()
     diff = (plugin[both] - r[both]).abs()
-    return {"samples": len(plugin), "nan_mismatch": nan_mismatch,
+    return {"samples": len(plugin),
+            "nan_samples": int(plugin.isna().sum()),
+            "nan_mismatch": nan_mismatch,
+            "unit_mismatch": unit_mismatch,
             "max_abs_diff": float(diff.max()) if both.any() else np.nan,
-            "pass": bool(nan_mismatch == 0 and (not both.any()
-                                                or diff.max() < TOLERANCE))}
+            "pass": bool(nan_mismatch == 0 and unit_mismatch == 0
+                         and (not both.any() or diff.max() < TOLERANCE))}
 
 
 def check_table(rscript, source, classifier, table, taxonomy, synonyms):
@@ -153,10 +169,11 @@ def check_table(rscript, source, classifier, table, taxonomy, synonyms):
         _, indices, _ = collapse_complexes(table, taxonomy)
     rows = []
     for index in INDICES:
-        r_smdi, _, _ = run_r(rscript, table, taxonomy, index, synonyms)
+        r_smdi, r_units, _, _ = run_r(rscript, table, taxonomy, index)
+        mismatch = unit_mismatches(table, taxonomy, index, synonyms, r_units)
         rows.append({"source": source, "classifier": classifier,
                      "index": index, "features": table.shape[0],
-                     **compare(indices[index], r_smdi)})
+                     **compare(indices[index], r_smdi, mismatch)})
         print(source, classifier, index, rows[-1]["max_abs_diff"],
               flush=True)
     return rows
@@ -222,7 +239,6 @@ def plugin_seconds(features, samples):
 
 
 def benchmark(rscript, quick):
-    synonyms = load_synonyms()
     features = performance.QUICK_FEATURES if quick else performance.FEATURES
     samples = performance.QUICK_SAMPLES if quick else performance.SAMPLES
     repeats = 1 if quick else REPEATS
@@ -238,8 +254,8 @@ def benchmark(rscript, quick):
                     "--plugin-seconds", str(n_features), str(n_samples)]))
                 rows.append(("q2-periodontitis", n_features, n_samples,
                              table.matrix_data.nnz, seconds, peak))
-                _, seconds, peak = run_r(rscript, table, taxonomy, "SMDI",
-                                         synonyms)
+                _, _, seconds, peak = run_r(rscript, table, taxonomy,
+                                            "SMDI")
                 rows.append(("R microbiome 1.6.0", n_features, n_samples,
                              table.matrix_data.nnz, seconds, peak))
     raw = pd.DataFrame(rows, columns=["implementation", "features",
