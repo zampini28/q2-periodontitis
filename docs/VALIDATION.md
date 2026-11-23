@@ -211,6 +211,35 @@ The PRJNA773195 fallback written in its configuration (forward reads only
 if DADA2 kept less than 10% of reads) was not triggered: DADA2 kept a
 median of 32%.
 
+### Clarification: data sets used to derive and test the SMDI
+
+[ANALYSIS_PLAN.md](ANALYSIS_PLAN.md) §2.3 defines a cohort as independent
+when Chen, Marsh & Al-Hebshi (2022) did not use it to derive or test the
+SMDI, and lists their training and test data sets. Their Methods also
+name two nitrate studies "used as additional test sets" (without an AUC),
+which §2.3 omits. The plan is not changed. Neither study is among the 16
+cohorts of `validation/cohorts.tsv` (the search found only in-vitro nitrate
+studies, excluded as not human), so no result is affected. Recorded on
+2026-11-22.
+
+The data sets of Chen et al. (2022), their accessions and their place in
+this validation (the paper gives no accessions):
+
+| Use in Chen et al. (2022) | Study | Accession | Source of the accession | This validation |
+|---|---|---|---|---|
+| Training | Abusleme et al. 2013 | SRP012422 | ENA study record (title, University of Connecticut); cited for these data by Kirst et al. 2015 | not processed |
+| Training | Griffen et al. 2012 | SRP009299 | ENA study title is the paper's title | SRP009299_V12, SRP009299_V4 (not independent) |
+| Training | Kirst et al. 2015 | SRP051201 (PRJNA269205) | the paper: "BioProject accession number PRJNA269205" | SRP051201 (not independent) |
+| Test | Pei et al. 2020 (gingival crevicular fluid) | SRP226726 | the paper: "SRA Accession no. SRP226726" | SRP226726 (not independent) |
+| Test | Bizzarro et al. 2016, baseline samples | SRP062274 | NCBI BioProject PRJNA289294, linked to PubMed 26830979 | SRP062274 (not independent; therapy only) |
+| Test | Human Microbiome Project, V1–V3, healthy | hmpdacc.org (not SRA) | Chen et al. 2022 | not processed |
+| Additional test, no AUC | Rosier et al. 2020 | — | Chen et al. 2022 | not among the cohorts |
+| Additional test, no AUC | Jockel-Schneider et al. 2021 | — | Chen et al. 2022 | not among the cohorts |
+
+No sequencing run of the six independent case-control cohorts appears in
+any other cohort (run accessions in `results/samples/`); a sample
+deposited again under a new accession would not be detected this way.
+
 ## Case study: SRP075100
 
 This section gives more detail on one independent cohort, from the same

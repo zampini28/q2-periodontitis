@@ -89,20 +89,33 @@ species: AUC 0.96 training, 0.92 test). It is defined as:
 
 $$\mathrm{SMDI} = \overline{\mathrm{clr}}(\text{dysbiotic taxa}) - \overline{\mathrm{clr}}(\text{normobiotic taxa})$$
 
-The plugin reproduces the published computation, which used the R package
-*microbiome* 1.6.0, `transform(x, "clr")`. The source of that version was
-inspected, and `validation/analysis/rcheck.py` checks the plugin against
-microbiome 1.6.0 itself (see [VALIDATION.md](VALIDATION.md#cross-check-against-r-microbiome-160)):
+The paper's Methods state the software used for the CLR: "the 'transform'
+function in R package 'microbiome' (version 1.6.0)". The plugin follows
+the behaviour of that function, read from its source, and
+`validation/analysis/rcheck.py` checks the plugin against microbiome 1.6.0
+itself (see [VALIDATION.md](VALIDATION.md#cross-check-against-r-microbiome-160)):
 
 1. Counts are aggregated to the signature's taxonomic level (species or
    genus). Features without a name at that level keep their reads as
    separate units, so sample totals do not change.
 2. Counts are closed to relative abundances.
-3. One pseudocount, equal to **half the smallest non-zero relative
-   abundance of the whole table**, is added to **every** entry. That is
-   what the code does, although the paper describes the pseudocount as
-   added to zeros.
+3. **If the table contains a zero**, one pseudocount, equal to **half the
+   smallest non-zero relative abundance of the whole table**, is added to
+   **every** entry. A table without zeros gets no pseudocount. In
+   microbiome 1.6.0:
+   `if (any(xt == 0)) { minval <- min(v[v > 0])/2; xt <- xt + minval }`.
 4. `clr(x) = ln(x) - mean(ln(x))` is computed over all taxa of the sample.
+
+**Why the code and not the paper's wording.** The paper's text, and the
+guide of the authors' web calculator
+(<https://bioinformatics.forsyth.org/smdi/>), describe the pseudocount as
+added to zero entries only. The plugin follows the microbiome 1.6.0
+behaviour instead, because that is the computation the paper's Methods
+report, and so the one behind the published index values and cut-offs.
+The two conventions are not equivalent: on sparse tables they differ by
+up to about 0.2 SMDI units (simulated tables of `validation/analysis`),
+which matters next to the published cut-offs of 0–0.5. Which convention
+the web calculator uses is tested in `validation/calculator/`.
 
 Two consequences follow from the original definition.
 

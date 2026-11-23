@@ -1,0 +1,25 @@
+table	sample	has_zero	absent_smdi_taxa	plugin_microbiome_1.6.0	zeros_only_pseudocount	calculator
+dense	S1	False	0	-0.151296	-0.151296	
+dense	S2	False	0	-0.830454	-0.830454	
+dense	S3	False	0	-0.298917	-0.298917	
+dense	S4	False	0	0.100342	0.100342	
+dense	S5	False	0	0.087704	0.087704	
+dense	S6	False	0	0.231610	0.231610	
+dense	S7	False	0	0.162194	0.162194	
+dense	S8	False	0	0.085675	0.085675	
+zeros	S1	True	0	-3.478611	-3.717034	
+zeros	S2	True	0	-3.402609	-3.630945	
+zeros	S3	True	0	-3.051853	-3.191148	
+zeros	S4	True	0	-3.676871	-3.910927	
+zeros	S5	True	0	-3.146082	-3.316699	
+zeros	S6	True	0	-4.594282	-4.761138	
+zeros	S7	True	0	-3.129109	-3.261237	
+zeros	S8	True	0	-3.107209	-3.280924	
+absent	S1	True	5	-3.193432	-3.411645	
+absent	S2	True	5	-3.194510	-3.399929	
+absent	S3	True	5	-2.529227	-2.654932	
+absent	S4	True	5	-3.429066	-3.648625	
+absent	S5	True	5	-3.231065	-3.389250	
+absent	S6	True	5	-4.054387	-4.194131	
+absent	S7	True	5	-2.433081	-2.550860	
+absent	S8	True	5	-2.846817	-3.007933	

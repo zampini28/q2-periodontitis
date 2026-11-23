@@ -17,7 +17,10 @@ checked with the default parameters, with min_confidence = 0.7 and with a
 fixed smdi_pseudocount of 1e-5 (SETTINGS). Taxonomies without a Confidence
 column (simulated, synthetic and VSEARCH tables) get confidences drawn from
 U(0.5, 1) with a fixed seed, so the exclusion rule is exercised; the
-excluded column counts the features it excluded.
+excluded column counts the features it excluded. microbiome 1.6.0 adds
+its pseudocount only when the table has a zero; the zeros column records
+which case each comparison covered, and a dense table with every signature
+taxon in every sample covers the case without zeros.
 Tables checked: the simulated communities (simulation.py), the synthetic
 benchmark tables (performance.py) and every processed cohort and classifier
 in <data_dir>.
@@ -57,14 +60,17 @@ from common import CLASSIFIERS, load_cohorts  # noqa: E402
 from q2_periodontitis._methods import (  # noqa: E402
     SMDI_SIMPLIFIED,
     SMDI_SPECIES,
+    _canonical,
     _confidence_series,
     SYNONYMS,
     _taxon_series,
+    aggregate_counts,
     collapse_complexes,
     compute_smdi,
     feature_units,
     load_signature,
     load_synonyms,
+    taxon_key,
 )
 
 R_SCRIPT = os.path.join(HERE, "smdi_microbiome.R")
@@ -151,6 +157,20 @@ def unit_mismatches(table, taxonomy, index, synonyms, r_units, exclude):
     return int((plugin != r_units.reindex(plugin.index)).sum())
 
 
+def has_zeros(table, taxonomy, index, synonyms, exclude):
+    """True when the taxon-level table the CLR is taken over has a zero,
+    including signature taxa absent from the table (added as zeros)."""
+    sig = load_signature(INDICES[index])
+    level = sig["level"].iloc[0].strip().lower()
+    counts = aggregate_counts(table, taxonomy, synonyms, level, exclude)
+    counts = counts[counts.sum(axis=1) > 0]
+    keys = [taxon_key(_canonical(t.strip(), synonyms)) if level == "species"
+            else _canonical(t.strip(), synonyms).lower()
+            for t in sig["taxon"]]
+    return bool((counts.to_numpy() == 0).any()
+                or any(k not in counts.columns for k in keys))
+
+
 def timing(stdout):
     """Seconds and peak RSS (MB) from a child's last line '<s>\\t<MB>'."""
     seconds, peak = stdout.strip().splitlines()[-1].split("\t")
@@ -220,6 +240,8 @@ def check_table(rscript, source, classifier, table, taxonomy, synonyms):
                          "setting": setting, "index": index,
                          "features": table.shape[0],
                          "excluded": len(exclude),
+                         "zeros": has_zeros(table, taxonomy, index,
+                                            synonyms, exclude),
                          **compare(indices[index], r_smdi, mismatch)})
             print(source, classifier, setting, index,
                   rows[-1]["max_abs_diff"], flush=True)
@@ -238,6 +260,19 @@ def simulated_tables(quick):
             relative, depth, simulation.SEED + depth)
         yield ("simulated %d reads" % depth,
                biom.Table(counts.T, feature_ids, sample_ids), taxonomy)
+
+
+def dense_table(samples=20):
+    """Every simulated taxon in every sample (counts 1-499, fixed seed), so
+    the taxon-level table has no zero for the signatures it covers."""
+    taxa, _ = simulation.build_taxa()
+    feature_ids = ["F%d" % i for i in range(len(taxa))]
+    taxonomy = pd.DataFrame({"Taxon": taxa["taxonomy"].tolist()},
+                            index=pd.Index(feature_ids, name="Feature ID"))
+    counts = np.random.default_rng(CONFIDENCE_SEED).integers(
+        1, 500, (len(taxa), samples))
+    return biom.Table(counts, feature_ids,
+                      ["S%d" % j for j in range(samples)]), taxonomy
 
 
 def cohort_tables(data_dir):
@@ -260,6 +295,9 @@ def crosscheck(rscript, data_dir, quick):
     rows = []
     for source, table, taxonomy in simulated_tables(quick):
         rows += check_table(rscript, source, "", table, taxonomy, synonyms)
+    table, taxonomy = dense_table()
+    rows += check_table(rscript, "dense (no zeros)", "", table, taxonomy,
+                        synonyms)
     grid = [(100, 10)] if quick else [(1000, 100), (10000, 500)]
     for features, samples in grid:
         table, taxonomy = performance.make_table(features, samples)

@@ -98,8 +98,10 @@ def test_r_parser_gives_plugin_units(tmp_path, level):
 @pytest.mark.skipif(not RSCRIPT, reason="RSCRIPT (microbiome 1.6.0) not set")
 def test_plugin_matches_r_microbiome():
     check = rcheck.crosscheck(RSCRIPT, "", quick=True)
-    assert len(check) == 2 * len(rcheck.SETTINGS) * len(rcheck.INDICES)
+    assert len(check) == 3 * len(rcheck.SETTINGS) * len(rcheck.INDICES)
     assert check["pass"].all(), check.to_string()
+    # both branches of microbiome's pseudocount rule are covered
+    assert check["zeros"].any() and not check["zeros"].all()
     # the min_confidence setting must actually exclude features
     low = check[check["setting"] == "min_confidence=0.7"]
     assert (low["excluded"] > 0).all()
